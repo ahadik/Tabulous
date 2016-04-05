@@ -1,6 +1,4 @@
-@import "bourbon/bourbon";
 @import "reset";
-//@import "retina";
 
 @mixin mq($mq) {
   @if $mq == 690  { @media (max-width: 690px)  { @content; } }
@@ -58,7 +56,7 @@ $node_color: #DB2780;
 	top: 0;
 	bottom: 0;
 	overflow: hidden;
-	@include transition(all 0.4s ease-in-out);
+	transition: all 0.4s ease-in-out;
 	&.orient_left{
 		right: 300px;
 	}
@@ -122,16 +120,16 @@ $node_color: #DB2780;
 	}
 	
 	#check{
-		background-image: url('icons/check1x.png');
+		background-image: url('../icons/check1x.png');
 		@include mq(retina){
-			background-image: url('icons/check2x.png');
+			background-image: url('../icons/check2x.png');
 		}
 	}
 	
 	#x{
-		background-image: url('icons/cancel1x.png');
+		background-image: url('../icons/cancel1x.png');
 		@include mq(retina){
-			background-image: url('icons/cancel2x.png');
+			background-image: url('../icons/cancel2x.png');
 		}
 	}
 	
@@ -238,11 +236,11 @@ $node_color: #DB2780;
 			background-position: top center;
 			background-size: contain;
 			background-repeat: no-repeat;
-			@include transform(translate(-50%, -50%));
-			@include transition(all 0.4s ease-in-out);
-			background-image: url('icons/fresh1x.png');
+			transform: transform(translate(-50%, -50%));
+			transition: all 0.4s ease-in-out;
+			background-image: url('../icons/fresh1x.png');
 			@include mq(retina){
-				background-image: url('icons/fresh2x.png');
+				background-image: url('../icons/fresh2x.png');
 			}
 			
 			.upload_support{
@@ -291,16 +289,16 @@ $node_color: #DB2780;
 				
 				#replace{
 					float: right;
-					background-image: url('icons/fresh1x.png');
+					background-image: url('../icons/fresh1x.png');
 					@include mq(retina){
-						background-image: url('icons/fresh2x.png');
+						background-image: url('../icons/fresh2x.png');
 					}
 				}
 				#refresh{
 					float: left;
-					background-image: url('icons/refresh1x.png');
+					background-image: url('../icons/refresh1x.png');
 					@include mq(retina){
-						background-image: url('icons/refresh2x.png');
+						background-image: url('../icons/refresh2x.png');
 					}
 				}
 			}
@@ -358,7 +356,7 @@ sidebar{
 	right: -300px;
 	height: 100%;
 	z-index: 2;
-	@include transition(all 0.4s ease-in-out);
+	transition: all 0.4s ease-in-out;
 	&.reveal{
 		right: 0;
 	}
@@ -410,9 +408,9 @@ sidebar{
 					left: -7px;
 					background-position: center center;
 					background-size: contain;
-					background-image: url('icons/oval1x.png');
+					background-image: url('../icons/oval1x.png');
 					@include mq(retina){
-						background-image: url('icons/oval3x.png');
+						background-image: url('../icons/oval3x.png');
 					}
 				}
 				.priority_bottom{
@@ -423,9 +421,9 @@ sidebar{
 				    bottom: 44px;
 					background-position: center center;
 					background-size: contain;
-					background-image: url('icons/triangle1x.png');
+					background-image: url('../icons/triangle1x.png');
 					@include mq(retina){
-						background-image: url('icons/triangle3x.png');
+						background-image: url('../icons/triangle3x.png');
 					}
 				}
 				.priority_line{
@@ -484,23 +482,23 @@ sidebar{
 					}
 					
 					.green{
-						background-image: url('icons/green2x.png');
+						background-image: url('../icons/green2x.png');
 						@include mq(retina){
-							background-image: url('icons/green3x.png');
+							background-image: url('../icons/green3x.png');
 						}
 					}
 					
 					.orange{
-						background-image: url('icons/orange2x.png');
+						background-image: url('../icons/orange2x.png');
 						@include mq(retina){
-							background-image: url('icons/orange3x.png');
+							background-image: url('../icons/orange3x.png');
 						}
 					}
 					
 					.red{
-						background-image: url('icons/red2x.png');
+						background-image: url('../icons/red2x.png');
 						@include mq(retina){
-							background-image: url('icons/red3x.png');
+							background-image: url('../icons/red3x.png');
 						}
 					}
 					
@@ -532,9 +530,9 @@ sidebar{
 		    background-position: center center;
 		    background-size: contain;
 		    top: -1px;
-			background-image: url('icons/exportReport1x.png');
+			background-image: url('../icons/exportReport1x.png');
 			@include mq(retina){
-				background-image: url('icons/exportReport2x.png');
+				background-image: url('../icons/exportReport2x.png');
 			}
 		}
 	}
@@ -549,9 +547,9 @@ sidebar{
 		background-repeat: no-repeat;
 		background-position: center center;
 		cursor: pointer;
-		background-image: url('icons/uploadButton1x.png');
+		background-image: url('../icons/uploadButton1x.png');
 		@include mq(retina){
-			background-image: url('icons/uploadButton2x.png');
+			background-image: url('../icons/uploadButton2x.png');
 		}
 		
 	}
@@ -570,7 +568,7 @@ sidebar{
 		height: 200px;
 		left: 50%;
 		top: 50%;
-		@include transform(translate(-50%,-50%));
+		transform: translate(-50%, -50%);
 		.upload_selection{
 			position: relative;
 			float: left;
@@ -583,7 +581,7 @@ sidebar{
 			&:last-of-type{
 				margin-left: 20px;
 			}
-			@include transition(all 1.0s ease-in-out);
+			transition: all 1.0s ease-in-out;
 			&.enter{
 				transform: scale(1.1);
 			    opacity: 1;

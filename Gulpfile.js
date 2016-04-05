@@ -74,7 +74,7 @@ gulp.task('uglify', function () {
         'mangle': isCI ? true : false
       }))
     .pipe(gulpif(!isCI, sourcemaps.write('maps')))
-    .pipe(babel()) //No idea if this works. We'll find out!
+    //.pipe(babel()) //No idea if this works. We'll find out!
     .pipe(gulp.dest(dirs.public + 'js'))
     .pipe(browserSync.stream());
 });
