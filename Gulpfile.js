@@ -44,7 +44,7 @@ var dirs = {
     ]
   },
   'sass': 'src/sass/**/*.scss',
-  'images': ['src/imgs/**/*.*', 'src/icons/**/*.*'],
+  'images': {'imgs': 'src/imgs/**/*', 'icons' : 'src/icons/**/*'},
   'public': 'public/',
   'modules': 'modules/final',
   'html': 'src/**/*.html'
@@ -143,18 +143,27 @@ gulp.task('sass:watch', function () {
 // Image Tasks
 //////////////////////////////
 gulp.task('images', function () {
-  gulp.src(dirs.images)
+  gulp.src(dirs.images.imgs)
     .pipe(imagemin({
       'progressive': true,
       'svgoPlugins': [
         { 'removeViewBox': false }
       ]
     }))
-    .pipe(gulp.dest(dirs.public + '/images'));
+    .pipe(gulp.dest(dirs.public + '/imgs'));
+
+    gulp.src(dirs.images.icons)
+    .pipe(imagemin({
+      'progressive': true,
+      'svgoPlugins': [
+        { 'removeViewBox': false }
+      ]
+    }))
+    .pipe(gulp.dest(dirs.public + '/icons'));
 });
 
 gulp.task('images:watch', function () {
-  gulp.watch(dirs.images, ['images']);
+  gulp.watch([dirs.images.imgs, dirs.images.icons], ['images']);
 });
 
 //////////////////////////////
