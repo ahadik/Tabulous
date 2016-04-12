@@ -1,0 +1,382 @@
+body{
+	overflow: hidden;
+}
+
+.body{
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	overflow: hidden;
+	transition: all .4s ease-in-out;
+	&.orient_left{
+		right: 300px;
+	}
+
+	.canvas{
+		position: absolute;
+		background-color: $background_gray;
+		top: 0;
+		bottom: 0;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		width: 100%;
+		&::-webkit-scrollbar {
+			display: none;
+		}
+
+		&__upload{
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			&--inner{
+				position: absolute;
+				width: 420px;
+				height: 200px;
+				@include center();
+				.upload-selection{
+					position: relative;
+					float: left;
+					height: 150px;
+					width: 150px;
+					display: block;
+					background-color: grey;
+					opacity: 0;
+					//pointer-events: none;
+					&:last-of-type{
+						margin-left: 20px;
+					}
+					transition: all 1.0s ease-in-out;
+					&.enter{
+						transform: scale(1.1);
+					    opacity: 1;
+					}
+				}
+			}
+			&.show{
+				display: block;
+			}
+		}
+		
+		.canvas--inner{
+			position: relative;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 250px;
+			height: 65%;
+			background-color: #264763;
+			z-index: 100;
+			max-width: $interface_max_width;
+			width: 95%;
+			box-shadow: 0 0px 40px rgba(0, 0, 0, .2);
+
+			.canvas__first-upload{
+				position: absolute;
+				width: 136px;
+				height: 180px;
+				@include center();
+				.upload_support{
+					position: absolute;
+					color: white;
+					font-size: 16px;
+					text-align: center;
+					bottom: 0;
+					width: 100%;
+					font-weight: 500;
+				}
+			}
+
+			#demo{
+				display: none;
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(38, 71, 99, .9);
+				p{
+					position: absolute;
+					width: 175px;
+					height: auto;
+					top: 150px;
+					right: 75px;
+					color: white;
+					letter-spacing: .4;
+					font-weight: 500;
+					line-height: 124%;
+				}
+				#video{
+					position: absolute;
+					left: 75px;
+					top: 75px;
+				}
+				#continue{
+					position: absolute;
+					top: 300px;
+					right: 114px;
+					line-height: 35px;
+					padding: 10px;
+					height: 35px;
+					background-color: white;
+					cursor: pointer;
+					font-weight: 500;
+				}
+			}
+			
+			#reupload{
+				display: none;
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				background-color: rgba(38, 70, 100, .95);
+				#reupload_wrapper{
+					position: relative;
+					width: 290px;
+					overflow: hidden;
+					margin-top: 150px;
+					margin-left: auto;
+					margin-right: auto;
+					
+					div{
+						position: relative;
+						display: table-cell;
+						background-repeat: no-repeat;
+						background-position: center center;
+						background-size: contain;
+						width: 134px;
+						height: 200px;
+						p{
+							position: absolute;
+							bottom: 0;
+							color: white;
+							text-align: center;
+							width: 100%;
+						}
+					}
+					
+					#replace{
+						float: right;
+						background-image: url('../icons/fresh1x.png');
+						@include mq(retina){
+							background-image: url('../icons/fresh2x.png');
+						}
+					}
+					#refresh{
+						float: left;
+						background-image: url('../icons/refresh1x.png');
+						@include mq(retina){
+							background-image: url('../icons/refresh2x.png');
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
+
+.sidebar{
+	position: absolute;
+	width: 300px;
+	background-color: $sidebar_gray;
+	right: -300px;
+	height: 100%;
+	z-index: 2;
+	transition: all .4s ease-in-out;
+	&.reveal{
+		right: 0;
+	}
+
+	&__header{
+		position: relative;
+		width: 100%;
+		margin-top: $header_height/2;
+		margin-bottom: 58px;
+		h1{
+			font-size: 20px;
+			font-weight: 600;
+			color: #26465B;
+			margin-left: 59px;
+			font-family: "Lubalin Demi for IBM";
+		}
+	}
+
+	&__report-gen{
+		position: absolute;
+	    width: 16px;
+	    height: 16px;
+	    right: 35px;
+	    background-position: center center;
+	    background-size: contain;
+	    top: -1px;
+		background-image: url('../icons/exportReport1x.png');
+		@include mq(retina){
+			background-image: url('../icons/exportReport2x.png');
+		}
+	}
+	
+	.tasks{
+		&__labels{
+			position: relative;
+			width: 80%;
+			height: 10px;
+			margin-left: auto;
+			margin-right: auto;
+			margin-bottom: 10px;
+			padding-left: 31px;
+			padding-right: 24px;
+			box-sizing: border-box;
+			span{
+				font-size: 14px;
+			    color: rgba(120, 120, 120, .4);
+			    font-weight: 300;
+				&:first-child{
+					float: left;
+				}
+				&:nth-child(2){
+					float: right;
+				}
+			}
+		}
+		
+		&__list{
+			position: relative;
+			margin-left: auto;
+			margin-right: auto;
+			width: 80%;
+			overflow: hidden;
+			padding: 10px;
+			.tasks__priority{
+				display: none;
+				position: absolute;
+				left: 14px;
+				width: 18px;
+				top: 0;
+				bottom: 0;
+				&--top{
+					position: absolute;
+					width: 16px;
+					height: 16px;
+					top: 29px;
+					left: -7px;
+					background-position: center center;
+					background-size: contain;
+					background-image: url('../icons/oval1x.png');
+					@include mq(retina){
+						background-image: url('../icons/oval3x.png');
+					}
+				}
+				&--bottom{
+					position: absolute;
+					width: 15px;
+				    height: 15px;
+				    left: -7px;
+				    bottom: 44px;
+					background-position: center center;
+					background-size: contain;
+					background-image: url('../icons/triangle1x.png');
+					@include mq(retina){
+						background-image: url('../icons/triangle3x.png');
+					}
+				}
+				&--line{
+					position: absolute;
+					top: 42px;
+					bottom: 57px;
+					width: 0;
+					border: 1px solid #e5e5e5;
+				}
+				
+			}
+			li{
+				display: block;
+			    box-sizing: border-box;
+			    width: 92%;
+			    float: right;
+			    height: 50px;
+			    background-color: white;
+			    margin-bottom: 15px;
+			    line-height: 50px;
+			    padding-left: 10px;
+			    padding-right: 10px;
+			    border: 1px solid #f6f6f6;
+				box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, .02);
+				.task_item_name{
+					position: relative;
+				    float: left;
+				    width: 75%;
+				    font-weight: 300;
+				    color: #676767;
+				    font-size: 14px;
+				}
+				.task_item_tabs{
+					position: relative;
+				    float: left;
+				    width: 25%;
+				    height: 50px;
+					.task_item_datum{
+						position: absolute;
+					    text-align: center;
+					    height: 59px;
+					    width: 59px;
+					    right: 0px;
+					    top: -5px;
+					    margin-left: auto;
+					    margin-right: auto;
+					    background-repeat: no-repeat;
+					    background-size: contain;
+					    background-position: center center;
+					    overflow: visible;
+					    font-weight: 700;
+					    color: white;
+					    font-size: 16px;
+					    line-height: 59px;
+					    font-family: "Lubalin Demi for IBM";
+					}
+					
+					.green{
+						background-image: url('../icons/green2x.png');
+						@include mq(retina){
+							background-image: url('../icons/green3x.png');
+						}
+					}
+					
+					.orange{
+						background-image: url('../icons/orange2x.png');
+						@include mq(retina){
+							background-image: url('../icons/orange3x.png');
+						}
+					}
+					
+					.red{
+						background-image: url('../icons/red2x.png');
+						@include mq(retina){
+							background-image: url('../icons/red3x.png');
+						}
+					}
+					
+				}
+				
+			}
+		}
+		
+	}
+	#sidebar_upload{
+		position: absolute;
+		height: 100px;
+		background: white;
+		width: 100%;
+		bottom: 0;
+		background-size: 40px;
+		background-repeat: no-repeat;
+		background-position: center center;
+		cursor: pointer;
+		background-image: url('../icons/uploadButton1x.png');
+		@include mq(retina){
+			background-image: url('../icons/uploadButton2x.png');
+		}
+		
+	}
+	
+}

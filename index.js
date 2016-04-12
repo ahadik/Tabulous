@@ -2,32 +2,24 @@ var express = require('express'),
     cfenv = require('cfenv'),
     path = require('path'),
     bodyParser = require('body-parser'),
-    hello_world = require('./modules/final/hello-world'), //for demonstration purposes only
-    fs,
-    multer = require('multer');
+    upload = require('./modules/final/upload'),
+    fs;
 
 var app = express(),
-    appEnv = cfenv.getAppEnv(),
-    storage = multer.diskStorage({
-    	destination: function(req, file, callback){
-    		callback(null, './uploads');
-    	}
-    });
-var upload = multer({storage : storage}).single('wireframe');
-
-app.post('/upload', function(req, res){
-	upload(req, res, function(err){
-		if(err){
-			return res.end('Error uploading file.');
-		}
-		res.end('File is uploaded');
-	});
-});
+    appEnv = cfenv.getAppEnv();
 
 app.use(express.static(path.join(__dirname, 'public')));
 //app.set(path.join('views', __dirname, '/apps'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+
+app.get('/upload', function(req, res){
+    res.sendFile('public/upload.html', {root : __dirname});
+});
+
+app.post('/upload', function(req, res){
+	var file = upload.router(req, res);
+});
 
 app.get('/', function(req, res){
     res.send('index.html');

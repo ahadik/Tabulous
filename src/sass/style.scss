@@ -1,8 +1,8 @@
 @import 'ibm-colors';
 @import 'settings/_all';
-@import 'objects/_all';
 @import 'utilities/_all';
-@import 'main_style';
+@import 'objects/_all';
+@import 'views/_all';
 
 body {
   background: color('neutral-white', 20);
@@ -10,4 +10,121 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+.circle_label{
+	color: white;
+	font-weight: 500;
+	font-family: "Lubalin Demi for IBM";
+}
+
+#task_master{
+	position: absolute;
+	width: 250px;
+	height: auto;
+	background: white;
+	
+	#task_head{
+		position: relative;
+		width: 100%;
+		margin-top: 5px;
+		margin-bottom: 15px;
+		h1{
+			font-weight: 700;
+			letter-spacing: .6;
+			font-size: 18px;
+		}
+	}
+	
+	#task_input{
+		margin-bottom: 15px;
+		input{
+			height: 27px;
+			width: 100%;
+			padding: 20px 10px 20px 10px;
+			letter-spacing: .4;
+			font-family: "HelveticaNeue-Light", sans-serif;
+			border: none;
+			background: #F6F6F6;
+			font-size: 16px;
+		}
+	}
+	
+	#task_options{
+		position: relative;
+		width: 100%;
+		height: 20px;
+		.task_option{
+			position: relative;
+			float: right;
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			background-position: center center;
+			background-size: contain;
+			cursor: pointer;
+			&:nth-child(2){
+				margin-right: 10px;
+			}
+		}
+	}
+	
+	#check{
+		background-image: url('../icons/check1x.png');
+		@include mq(retina){
+			background-image: url('../icons/check2x.png');
+		}
+	}
+	
+	#x{
+		background-image: url('../icons/cancel1x.png');
+		@include mq(retina){
+			background-image: url('../icons/cancel2x.png');
+		}
+	}
+	
+}
+
+.arrow_box {
+	position: relative;
+	background: #fff;
+	border: 2px solid #DB2780;
+	padding: 15px;
+	height: 110px;
+	width: auto;
+}
+.arrow_box:after, .arrow_box:before {
+	top: 100%;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.arrow_box:after {
+	border-color: rgba(255,255,255,0);
+	border-top-color: #fff;
+	border-width: 10px;
+	margin-left: -10px;
+}
+.arrow_box:before {
+	border-color: rgba(219, 39, 128, 0);
+	border-top-color: #DB2780;
+	border-width: 13px;
+	margin-left: -13px;
+}
+
+circle{
+	z-index: 100;
+}
+
+.dz-preview{
+	display: none;
+}
+
+#new_img{
+	
 }

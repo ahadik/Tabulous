@@ -370,26 +370,7 @@ $(document).ready(function(){
 	});
 	var header_offset = $('header h1').offset().top+50;
 	var max_offset = $('#interface_wrapper').offset().top-header_offset;
-	var first_file_drop = new Dropzone('#fresh_upload', {url: '/'});
-	var iteration_file_drop = new Dropzone('#refresh', {url : '/'});
-	var fresh_file_drop = new Dropzone('#replace', {url : '/'});
-	
-	first_file_drop.on('addedfile', function(file){
-		handle_file_drop(file, 0);
-		first_file_drop = null;
-		$('#fresh_upload').fadeOut();
-	});
-	
-	iteration_file_drop.on('addedfile', function(file){
-		handle_file_drop(file, 1);
-		$('#reupload').fadeOut();
-	});
-	
 
-	fresh_file_drop.on('addedfile', function(file){
-		handle_file_drop(file, 2);
-		$('#reupload').fadeOut();
-	});
 	
 	
 	$('#canvas').scroll(function(){

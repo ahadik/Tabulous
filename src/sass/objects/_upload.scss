@@ -1,0 +1,24 @@
+.box{
+	z-index: 10;
+	&__input{
+		svg{
+			transition: all .2s ease-in-out;
+			transform: scale(1);
+			&.is-dragover{
+				transform: scale(1.1);
+			}
+		}
+	}
+
+	&__uploading, &__success, &__error{
+		display: none;
+	}
+
+	&.is-uploading &__input{
+		visibility: none;
+	}
+
+	&.is-uploading &__uploading{
+		display: block;
+	}
+}
