@@ -23,6 +23,7 @@ _exports.router = function (req, res) {
 			console.log(err);
 			return res.end('Error uploading file.');
 		}
+		req.file.success = true;
 		res.json(req.file);
 		return req.file;
 	});

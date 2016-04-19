@@ -14,6 +14,8 @@ var gulp = require('gulp'),
     sasslint = require('gulp-sass-lint'),
     imagemin = require('gulp-imagemin'),
     cfenv = require('cfenv'),
+    webpack = require('webpack'),
+    gutil = require('gulp-util'),
     gulpif = require('gulp-if'),
     browserSync = require('browser-sync'),
     babel = require('gulp-babel');
@@ -29,8 +31,11 @@ var dirs = {
       '!src/**/*.min.js'
     ],
     'uglify': [
-      'src/js/**/*.js',
-      '!src/js/**/*.min.js'
+      'public/js/**/*.js',
+      '!public/js/**/*.min.js'
+    ],
+    'webpack': [
+      'src/**/*.js'
     ]
   },
   'server': {
@@ -60,6 +65,39 @@ browserSync = browserSync.create();
 //////////////////////////////
 // JavaScript Lint Tasks
 //////////////////////////////
+
+gulp.task('scripts', (cb) => {
+  webpack({
+    devtool: 'source-maps',
+    entry: './src/js/script.js',
+    output: {
+      path: './public/js',
+      filename: 'script.js'
+    },
+    module: {
+      loaders: [
+        {
+          test: /\.js?$/,
+          exclude: /node_modules/,
+          loaders: ['babel'],
+        },
+      ],
+    },
+  }, (err, stats) => {
+    if (err) throw new gutil.PluginError('webpack', err);
+    gutil.log('[webpack]', stats.toString({
+      progress: true,
+      colors: true
+    }));
+    browserSync.reload();
+    cb();
+  });
+});
+
+gulp.task('webpack:watch', function(){
+  gulp.watch(dirs.js.webpack, ['scripts']);
+});
+
 gulp.task('eslint', function () {
   gulp.src(dirs.js.lint)
     .pipe(eslint())
@@ -69,7 +107,6 @@ gulp.task('eslint', function () {
 
 gulp.task('uglify', function () {
   gulp.src(dirs.js.uglify)
-    .pipe(babel()) //No idea if this works. We'll find out!
     .pipe(gulpif(!isCI, sourcemaps.init()))
     .pipe(uglify({
       'mangle': isCI ? true : false
@@ -203,10 +240,10 @@ gulp.task('browser-sync', ['nodemon'], function () {
 //////////////////////////////
 // Running Tasks
 //////////////////////////////
-gulp.task('build', ['uglify', 'eslint', 'html', 'sass', 'images', 'node_es6']);
+gulp.task('build', ['scripts', 'eslint', 'html', 'sass', 'images', 'node_es6']);
 
 gulp.task('test', ['build']);
 
-gulp.task('watch', ['uglify:watch', 'eslint:watch', 'html:watch', 'sass:watch', 'images:watch', 'node_es6:watch']);
+gulp.task('watch', ['webpack:watch', 'eslint:watch', 'html:watch', 'sass:watch', 'images:watch', 'node_es6:watch']);
 
 gulp.task('default', ['browser-sync', 'build', 'watch']);

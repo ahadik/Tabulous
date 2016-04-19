@@ -245,16 +245,15 @@ function hide_sidebar(){
 
 
 
-	/*
-		0 = first file drop
-		1 = upload an iteration
-		2 = upload a new file
-		
-	*/ 
+/*
+	0 = first file drop
+	1 = upload an iteration
+	2 = upload a new file
 	
-
+*/ 
 function handle_file_drop(file, file_code){
-	var image_url = 'imgs/'+file.name;
+	file.path = file.path.substring(file.path.indexOf("/") + 1);
+	var image_url = file.path;
 	var image = new Image();
 	image.onload = function(){
 		edit_mode = true;
