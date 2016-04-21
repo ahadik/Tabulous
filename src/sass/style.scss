@@ -54,33 +54,41 @@ body {
 		position: relative;
 		width: 100%;
 		height: 20px;
-		.task_option{
-			position: relative;
-			float: right;
-			border-radius: 50%;
-			width: 20px;
-			height: 20px;
-			background-position: center center;
-			background-size: contain;
-			cursor: pointer;
-			&:nth-child(2){
-				margin-right: 10px;
+		.task-master{
+			&--option{
+				position: relative;
+				float: right;
+				border-radius: 50%;
+				width: 20px;
+				height: 20px;
+				background-position: center center;
+				background-size: contain;
+				cursor: pointer;
+				&:nth-child(2){
+					margin-right: 10px;
+				}
+			}
+			&--check{
+				background-image: url('../icons/check1x.png');
+				@include mq(retina){
+					background-image: url('../icons/check2x.png');
+				}
+			}
+			&--x{
+				background-image: url('../icons/cancel1x.png');
+				@include mq(retina){
+					background-image: url('../icons/cancel2x.png');
+				}
 			}
 		}
 	}
 	
 	#check{
-		background-image: url('../icons/check1x.png');
-		@include mq(retina){
-			background-image: url('../icons/check2x.png');
-		}
+		
 	}
 	
 	#x{
-		background-image: url('../icons/cancel1x.png');
-		@include mq(retina){
-			background-image: url('../icons/cancel2x.png');
-		}
+		
 	}
 	
 }
@@ -90,7 +98,6 @@ body {
 	background: #fff;
 	border: 2px solid #DB2780;
 	padding: 15px;
-	height: 110px;
 	width: auto;
 }
 .arrow_box:after, .arrow_box:before {

@@ -1,5 +1,5 @@
 export default class Uploader{
-	constructor(fileDrop, formSelector){
+	constructor(fileDrop, formSelector, editor){
 		this.isAdvancedUpload = function() {
 			var div = document.createElement('div');
 			return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FileReader' in window;
@@ -10,7 +10,7 @@ export default class Uploader{
 		this.form = document.querySelector(formSelector);
 		this.input = this.form.querySelector('input[type="file"]');
 		this.droppedFiles=false;
-
+		this.editor = editor;
 		this.setFormSubmission();
 		this.setFormEventListeners();
 	}
@@ -35,19 +35,20 @@ export default class Uploader{
 				let ajax = new XMLHttpRequest();
 				ajax.open( form.getAttribute( 'method' ), form.getAttribute( 'action' ), true );
 				ajax.setRequestHeader ("ENCTYPE", "multipart/form-data");
+
+				let editor = this.editor;
 				
-				ajax.onload = function(){
+				ajax.onload = () => {
 					form.classList.remove( 'is-uploading' );
 					if( ajax.status >= 200 && ajax.status < 400 ){
 						var data = JSON.parse( ajax.responseText );
-						console.log(data);
-						handle_file_drop(data, 0);
+						editor.handle_file_drop(data, 0);
 						form.classList.add( data.success == true ? 'is-success' : 'is-error' );
 						if( !data.success ) errorMsg.textContent = data.error;
 					}else{
 						alert( 'Error. Please, contact the webmaster!' );	
 					}
-				};
+				}
 				ajax.onerror = () => {
 					form.classList.remove( 'is-uploading' );
 					alert( 'Error. Please, try again!' );
