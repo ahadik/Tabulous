@@ -245,16 +245,15 @@ function hide_sidebar(){
 
 
 
-	/*
-		0 = first file drop
-		1 = upload an iteration
-		2 = upload a new file
-		
-	*/ 
+/*
+	0 = first file drop
+	1 = upload an iteration
+	2 = upload a new file
 	
-
+*/ 
 function handle_file_drop(file, file_code){
-	var image_url = 'imgs/'+file.name;
+	file.path = file.path.substring(file.path.indexOf("/") + 1);
+	var image_url = file.path;
 	var image = new Image();
 	image.onload = function(){
 		edit_mode = true;
@@ -370,26 +369,7 @@ $(document).ready(function(){
 	});
 	var header_offset = $('header h1').offset().top+50;
 	var max_offset = $('#interface_wrapper').offset().top-header_offset;
-	var first_file_drop = new Dropzone('#fresh_upload', {url: '/'});
-	var iteration_file_drop = new Dropzone('#refresh', {url : '/'});
-	var fresh_file_drop = new Dropzone('#replace', {url : '/'});
-	
-	first_file_drop.on('addedfile', function(file){
-		handle_file_drop(file, 0);
-		first_file_drop = null;
-		$('#fresh_upload').fadeOut();
-	});
-	
-	iteration_file_drop.on('addedfile', function(file){
-		handle_file_drop(file, 1);
-		$('#reupload').fadeOut();
-	});
-	
 
-	fresh_file_drop.on('addedfile', function(file){
-		handle_file_drop(file, 2);
-		$('#reupload').fadeOut();
-	});
 	
 	
 	$('#canvas').scroll(function(){

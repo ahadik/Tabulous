@@ -1,0 +1,54 @@
+.box{
+	z-index: 10;
+	&__input{
+		svg{
+			transition: all .2s ease-in-out;
+			transform: scale(1);
+			&.is-dragover{
+				transform: scale(1.1);
+			}
+		}
+	}
+
+	&__uploading, &__success, &__error{
+		display: none;
+	}
+
+	.icon-loading{
+		display: none;
+		animation-name: icon-loading--rotate;
+		animation-duration: 1s;
+		animation-iteration-count: infinite;
+		left: 10px;
+		transform-origin: 66.5px 77.5px; //this is complete shit but fuck SVG transforms
+	}
+
+	.icon-error{
+		display: none;
+	}
+
+	&.is-uploading{
+		.icon-add{
+			display: none;
+		}
+
+		.icon-loading{
+			display: block;
+		}
+	}
+
+	&.is-error{
+		.icon-add{
+			display: none;
+		}
+
+		.icon-error{
+			display: block;
+		}
+	}
+}
+
+@keyframes icon-loading--rotate{
+	0% {transform: rotate(0deg) translate(49px, 60px);}
+	100% {transform: rotate(360deg) translate(49px, 60px);}
+}
