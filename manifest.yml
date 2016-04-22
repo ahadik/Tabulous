@@ -1,7 +1,7 @@
 applications:
   - disk_quota: 1024M
-    host: <insert_host>
-    name: <insert_name>
+    host: tabulous
+    name: tabulous
     path: .
     domain: mybluemix.net
     instances: 1

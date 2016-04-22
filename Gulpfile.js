@@ -46,8 +46,7 @@ var dirs = {
   'sass': 'src/sass/**/*.scss',
   'images': {'imgs': 'src/imgs/**/*', 'icons' : 'src/icons/**/*'},
   'public': 'public/',
-  'modules': 'modules/final',
-  'html': 'src/**/*.html'
+  'html': 'views/**/*.ejs'
 };
 
 var isCI = (typeof process.env.CI === 'undefined') ? process.env.CI : false;
