@@ -12,9 +12,17 @@ let uploader;
 let editor;
 
 window.onload = () => {
-	let fileDrop = document.querySelector('.box__input svg');
+	let newFileDrops = Array.from(document.querySelectorAll('.new-upload .box__input svg'));
+	let refreshFileDrops = Array.from(document.querySelectorAll('.refresh-upload .box__input svg'));
+	let enterCanvas = document.querySelector('.login__canvas');
+	enterCanvas.addEventListener('click', () => {
+		let introPanel = document.querySelector('.body');
+		introPanel.classList.remove('intro');
+		let headerContent = document.querySelector('.header__content');
+		headerContent.classList.add('.header__content--hidden');
+	});
 	editor = new Editor(15, d3);
-	uploader = new Uploader(fileDrop, '.box', editor);
+	uploader = new Uploader(newFileDrops, refreshFileDrops, '.box', editor);
 	
 
 	$(document).keyup(function(e) {
@@ -36,13 +44,9 @@ window.onload = () => {
 			$('#header_wrapper').css('opacity', 0);
 		}
 	});
-	$('#continue').click(function(){
-		$('#demo').fadeOut();
-		$('#fresh_upload').css('opacity', 1);
-	});
 
 	$('#sidebar_upload').click(function(){
-		$('#reupload').fadeIn();
+		document.querySelector('.reupload').classList.remove('reupload--hide');
 	});
 
 	$('.sortable').sortable();

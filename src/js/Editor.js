@@ -11,12 +11,12 @@ export default class Editor{
 		this.d3 = d3;
 
 		this.dragmove = (d) => {
-			let mouse = d3.mouse(this.container.node());
+			d3.mouse(this.container.node());
 			let x = d3.event.x;
 			let y = d3.event.y;
 			let circle = d3.select(this).select('circle').attr("transform", "translate(" + x + "," + y + ")");
 			let polygon = d3.select(this).select('polygon').attr("transform", "translate(" + (x-20) + "," + (y-20) + ")");
-			let label = d3.select(this).select('text').attr("transform", "translate(" + (x-(radius/2)) + "," + (y+(radius/2)) + ")");
+			d3.select(this).select('text').attr("transform", "translate(" + (x-(radius/2)) + "," + (y+(radius/2)) + ")");
 
 			let g;
 			if(circle[0][0] == null){
@@ -117,41 +117,40 @@ export default class Editor{
 		var mouse = d3.mouse(container.node());
 		var entry = this.generate_circle(mouse);
 		var prev_circle = d3.selectAll('.circle').last();
-		var prev_entry = prev_circle.data();
 		var radius = this.radius;
 		// Append a new point
 		var tooltip = this.tooltip;
 		var circle_g = container.append('g').attr('class', 'circle').style("cursor", "pointer").call(this.drag);
-		var circle = circle_g.append("circle")
-								.attr("transform", "translate(" + mouse[0] + "," + mouse[1] + ")")
-								.attr("r", this.radius)
-								.attr("class", "dot")
-								.style('fill', '#DB2780')
-								.style('stroke-width',2)
-								.style('stroke', 'white')
-								.style("cursor", "pointer")
-								.attr("filter", "url(#dropshadow)")
-								.on('click',function(){
-									var mouse = d3.mouse(container.node());
-									tooltip.transition().duration(200).style("opacity", 1).each('end',function(){
-										$('input[name="task_name"]').focus();
-									});
-									tooltip.style("left", (mouse[0]-125) + "px")     
-											.style("top", (mouse[1]-155) + "px")
-											.attr('tabs', entry.index);
-								})
-								.on('mouseover', function(){
-									d3.select(this).transition()
-										.ease('elastic')
-										.duration('250')
-										.attr('r', radius*1.5);
-								})
-								.on('mouseout', function(){
-									d3.select(this).transition()
-										.ease('elastic')
-										.duration('250')
-										.attr('r', radius);
-								});
+		circle_g.append("circle")
+			.attr("transform", "translate(" + mouse[0] + "," + mouse[1] + ")")
+			.attr("r", this.radius)
+			.attr("class", "dot")
+			.style('fill', '#DB2780')
+			.style('stroke-width',2)
+			.style('stroke', 'white')
+			.style("cursor", "pointer")
+			.attr("filter", "url(#dropshadow)")
+			.on('click',function(){
+				var mouse = d3.mouse(container.node());
+				tooltip.transition().duration(200).style("opacity", 1).each('end',function(){
+					$('input[name="task_name"]').focus();
+				});
+				tooltip.style("left", (mouse[0]-125) + "px")     
+						.style("top", (mouse[1]-155) + "px")
+						.attr('tabs', entry.index);
+			})
+			.on('mouseover', function(){
+				d3.select(this).transition()
+					.ease('elastic')
+					.duration('250')
+					.attr('r', radius*1.5);
+			})
+			.on('mouseout', function(){
+				d3.select(this).transition()
+					.ease('elastic')
+					.duration('250')
+					.attr('r', radius);
+			});
 								
 		var offset;
 		if(entry.index>9){
@@ -159,13 +158,13 @@ export default class Editor{
 		}else{
 			offset = 5;
 		}
-		var label = circle_g.append('text')
-								.attr("transform", "translate(" + (mouse[0]-(offset)) + "," + (mouse[1]+(5)) + ")")
-								.attr('class', 'circle_label')
-								.style('fill', 'white')
-								.style('font-weight', 500)
-								.text(entry.index)
-								.attr("pointer-events", "none");
+		circle_g.append('text')
+			.attr("transform", "translate(" + (mouse[0]-(offset)) + "," + (mouse[1]+(5)) + ")")
+			.attr('class', 'circle_label')
+			.style('fill', 'white')
+			.style('font-weight', 500)
+			.text(entry.index)
+			.attr("pointer-events", "none");
 		
 		//bind the circle's data to this newly created element
 		
@@ -188,12 +187,12 @@ export default class Editor{
 
 	create_hover(){
 		var mouse = d3.mouse(container.node());
-		var hover_circle = container
-							.append('circle')
-							.attr('id', 'hover_circle')
-							.attr("transform", "translate(" + mouse[0] + "," + mouse[1] + ")")
-							.attr('r', radius)
-							.attr('class', 'dot');
+		container
+			.append('circle')
+			.attr('id', 'hover_circle')
+			.attr("transform", "translate(" + mouse[0] + "," + mouse[1] + ")")
+			.attr('r', radius)
+			.attr('class', 'dot');
 		
 	}
 
@@ -202,7 +201,7 @@ export default class Editor{
 	}
 
 	update_hover(){
-		var mouse = d3.mouse(container.node());
+		d3.mouse(container.node());
 		var x = d3.event.x;
 		var y = d3.event.y;
 		d3.select('#hover_circle').transition().duration(.00001).attr("transform", "translate(" + x + "," + y + ")");
@@ -250,7 +249,100 @@ export default class Editor{
 		}
 	}
 
+	update_image(editor, image){
+		let {interface_height : interface_height, interface_width : interface_width} = this.get_interface_dims(editor, image);
+		d3.selectAll('image').remove();
+		editor.edit_mode = false;
+		editor.container.insert('image', 'line')
+			.attr('xlink:href', image.src)
+			.attr('height', interface_height)
+			.attr('width', interface_width)
+			.style('display','none');
+		$('#interface_wrapper').height(interface_height).width(interface_width);
+	}
 
+	reset_image(editor,image, click){
+		let svg = d3.selectAll('svg#interface');
+		if(svg){
+			svg.remove();
+		}
+		let {interface_height : interface_height, interface_width : interface_width} = this.get_interface_dims(editor, image);
+		editor.container = d3.select('#interface_wrapper').append('svg')
+			.attr('height', interface_height)
+			.attr('width', interface_width)
+			.attr('id', 'interface')
+			.on("click", () => {
+				click.call(editor);
+			});
+		
+		editor.container.on('mousemove', () => {editor.draw_line.call(editor)});
+				
+		editor.container.append('image')
+			.attr('xlink:href', image.src)
+			.attr('height', interface_height)
+			.attr('width', interface_width)
+			.style('display','none');
+		$('#interface_wrapper').height(interface_height).width(interface_width);
+	}
+
+	get_interface_dims (editor, image){
+		let interface_height, interface_width;
+		let im_height = image.height;
+		let im_width = image.width;
+
+		if (im_width > editor.max_width){
+			interface_width = editor.max_width;
+			interface_height = (editor.max_width/im_width)*im_height;
+		}else{
+			interface_width = im_width;
+			interface_height = im_height;
+		}
+		return {interface_height : interface_height, interface_width : interface_width}
+	}
+
+	hide_blank_upload(){
+		document.querySelector('.canvas__first-upload').classList.add('canvas__first-upload--hidden');
+
+	}
+
+	show_intro_video(){
+
+		let demo_modal = document.querySelector('.new-user .demo-modal');
+		if(demo_modal){
+			demo_modal.classList.remove('demo-modal--hide');
+			document.querySelector('.demo-modal .video').play();
+			document.querySelector('.demo-modal__continue').addEventListener('click', () => {
+				demo_modal.classList.add('demo-modal--hide');
+				document.querySelector('.new-user').classList.remove('new-user');
+			});
+		}
+	}
+
+	create_tooltip(editor){
+		editor.tooltip = d3.select("#interface_wrapper").append("div")   
+		    .attr("id", "task_master")               
+		    .style("opacity", 0)
+		    .html(
+		    	'<div class="arrow_box">'+
+		    		'<div id="task_head">'+
+		    			'<h1>MAKE TASK</h1>'+
+		    			'<div id="task_can"></div>'+
+		    		'</div>'+
+		    		'<div id="task_input"><input type="text" name="task_name"></input></div>'+
+		    		'<div id="task_options">'+
+			    		'<div class="task-master--check task-master--option"></div>'+
+		    			'<div class="task-master--x task-master--option"></div>'+
+		    		'</div>'+
+		    	'</div>'
+		    );
+
+		editor.tooltip.select('.task-master--check').node().addEventListener('click', () => {
+			editor.check_response.call(editor);
+		});
+		editor.tooltip.select('.task-master--x').node().addEventListener('click', () => {
+			editor.x_response.call(editor);
+		});
+	}
 
 	/*
 		0 = first file drop
@@ -262,93 +354,26 @@ export default class Editor{
 		file.path = file.path.substring(file.path.indexOf("/") + 1);
 		let image_url = file.path;
 		let image = new Image();
-		let max_width = this.max_width;
 		//let container = this.container;
 		let click = this.click;
 		let editor = this;
 		image.onload = function(){
 			editor.edit_mode = true;
-			let im_height = image.height;
-			let im_width = image.width;
-			let interface_height, interface_width;
 			
-			if (im_width > max_width){
-				interface_width = max_width;
-				interface_height = (max_width/im_width)*im_height;
-			}else{
-				interface_width = im_width;
-				interface_height = im_height;
-			}		
-			let background;
+			if(file_code == 0){
+				editor.reset_image(editor, image, click);
+				editor.show_intro_video();
+				editor.hide_blank_upload();
+			}
 			if(file_code == 1){
-				d3.selectAll('image').remove();
-				edit_mode = false;
-				background = editor.container.insert('image', 'line')
-					.attr('xlink:href', image.src)
-					.attr('height', interface_height)
-					.attr('width', interface_width)
-					.style('display','none');
-			}else if(file_code == 2){
-				d3.selectAll('svg').remove();
+				editor.update_image(editor, image)
 			}
-			
-			if(file_code == 0 || file_code == 2){
-				
-				editor.container = d3.select('#interface_wrapper').append('svg')
-											.attr('height', interface_height)
-											.attr('width', interface_width)
-											.attr('id', 'interface')
-											.on("click", () => {
-												click.call(editor);
-											});
-				editor.container.on('mousemove', () => {editor.draw_line.call(editor)});
-				
-				background = editor.container.append('image')
-					.attr('xlink:href', image.src)
-					.attr('height', interface_height)
-					.attr('width', interface_width)
-					.style('display','none');
-			}
-			
-
 			
 			$('image').fadeIn();
 			
-			if(file_code == 0){
-				$('#demo').append('<video id="video" width="640" loop><source src="/imgs/intro.mp4" type="video/mp4" /></video>');
-				$('#demo').delay(1000).fadeIn(400, function(){
-					$('#video').get(0).play()
-				});
-			}
+			editor.create_tooltip(editor);
 			
-
-			editor.tooltip = d3.select("#interface_wrapper").append("div")   
-			    .attr("id", "task_master")               
-			    .style("opacity", 0)
-			    .html(
-			    	'<div class="arrow_box">'+
-			    		'<div id="task_head">'+
-			    			'<h1>MAKE TASK</h1>'+
-			    			'<div id="task_can"></div>'+
-			    		'</div>'+
-			    		'<div id="task_input"><input type="text" name="task_name"></input></div>'+
-			    		'<div id="task_options">'+
-				    		'<div class="task-master--check task-master--option"></div>'+
-			    			'<div class="task-master--x task-master--option"></div>'+
-			    		'</div>'+
-			    	'</div>');
-
-			editor.tooltip.select('.task-master--check').node().addEventListener('click', () => {
-				editor.check_response.call(editor);
-			});
-			editor.tooltip.select('.task-master--x').node().addEventListener('click', () => {
-				editor.x_response.call(editor);
-			});
-
-
-			$('#interface_wrapper').height(interface_height).width(interface_width);
-			
-			$('#fresh_upload').hide();
+			document.querySelector('.reupload').classList.add('reupload--hide');
 			
 			/* For the drop shadow filter... */
 			let defs = editor.container.append("defs");
