@@ -1,7 +1,6 @@
 module.exports = function(app, passport, swiftCredentials) {
     var path = require('path');
     var __dirname = path.resolve(path.dirname());
-    var upload = require('./modules/upload');
     var objStorage = require('./modules/object_storage/index.js').install(swiftCredentials);
 
     // route for home page
