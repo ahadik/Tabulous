@@ -44,6 +44,7 @@ require('./modules/config/passport')(passport);
 
 var __dirname = path.resolve(path.dirname());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 app.set(path.join('views', __dirname, 'public'));
 app.set('port', process.env.VCAP_APP_PORT || 3000);
 app.use(bodyParser.urlencoded({extended: true}));

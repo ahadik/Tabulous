@@ -34,7 +34,6 @@ window.onload = () => {
 	let max_offset = $('#interface_wrapper').offset().top-header_offset;
 
 
-
 	$('#canvas').scroll(function(){
 		var offset = $('#interface_wrapper').offset().top-header_offset;
 		
