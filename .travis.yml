@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - '5.9'
+
+before_deploy: npm run build
+
+# Deploy
+deploy:
+  edge: true
+  provider: cloudfoundry
+  username: ahadik@us.ibm.com
+  password: ${BLUEMIX_PW}
+  api: https://api.ng.bluemix.net/
+  organization: ahadik-personal
+  space: dev
+  on:
+    branch: master

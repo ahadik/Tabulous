@@ -11,12 +11,20 @@ var express = require('express'),
 
 require('source-map-support').install();
 
+var vcapLocal = null
+try {
+  vcapLocal = require("./vcap-local.js");
+}catch (e) {}
+
+var appEnvOpts = vcapLocal ? {vcap:vcapLocal} : {};
+
 var app = express(),
-    appEnv = cfenv.getAppEnv();
+    appEnv = cfenv.getAppEnv(appEnvOpts);
 
-
-// set the view engine to ejs
-app.set('view engine', 'ejs');
+var req_url = 'https://dal.objectstorage.open.softlayer.com/v1/';
+var swiftCredentials = appEnv.getServiceCreds("tabulous-storage");
+swiftCredentials.container = process.env.TABULOUS_OBJ_CONTAINER;
+swiftCredentials.req_url = req_url;
 
 var configDB = require('./modules/config/database.js');
 var options = {
@@ -27,6 +35,9 @@ var options = {
   }
 }
 mongoose.connect(configDB.url(appEnv), options); // connect to our database
+
+// set the view engine to ejs
+app.set('view engine', 'ejs');
 
 require('./modules/config/passport')(passport);
 
@@ -42,9 +53,21 @@ app.use(session({ secret: process.env.SESSION_SECRET })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
+app.use(require("skipper")());
 
-require('./routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
+require('./routes.js')(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
 
 app.listen(3000, function() {
+
+    var skipperSwift = require("skipper-openstack")();
+    skipperSwift.ensureContainerExists(swiftCredentials, swiftCredentials.container, function (error) {
+      if (error) {
+        console.log("unable to create default container", swiftCredentials.container);
+      }
+      else {
+        console.log("ensured default container", swiftCredentials.container, "exists");
+      }
+    });
+
     console.info('Server listening on port ' + this.address().port);
 });

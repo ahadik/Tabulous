@@ -59,23 +59,35 @@
 	
 	__webpack_require__(11).install();
 	
+	var vcapLocal = null;
+	try {
+	  vcapLocal = __webpack_require__(12);
+	} catch (e) {}
+	
+	var appEnvOpts = vcapLocal ? { vcap: vcapLocal } : {};
+	
 	var app = express(),
-	    appEnv = cfenv.getAppEnv();
+	    appEnv = cfenv.getAppEnv(appEnvOpts);
+	
+	var req_url = 'https://dal.objectstorage.open.softlayer.com/v1/';
+	var swiftCredentials = appEnv.getServiceCreds("tabulous-storage");
+	swiftCredentials.container = process.env.TABULOUS_OBJ_CONTAINER;
+	swiftCredentials.req_url = req_url;
+	
+	var configDB = __webpack_require__(13);
+	var options = {
+	  mongos: {
+	    ssl: true,
+	    sslValidate: true,
+	    sslCA: [fs.readFileSync('private/cert.pem')] // cert from compose.io dashboard
+	  }
+	};
+	mongoose.connect(configDB.url(appEnv), options); // connect to our database
 	
 	// set the view engine to ejs
 	app.set('view engine', 'ejs');
 	
-	var configDB = __webpack_require__(12);
-	var options = {
-	    mongos: {
-	        ssl: true,
-	        sslValidate: true,
-	        sslCA: [fs.readFileSync('private/cert.pem')] // cert from compose.io dashboard
-	    }
-	};
-	mongoose.connect(configDB.url(appEnv), options); // connect to our database
-	
-	__webpack_require__(13)(passport);
+	__webpack_require__(14)(passport);
 	
 	var __dirname = path.resolve(path.dirname());
 	app.use(express.static(path.join(__dirname, 'public')));
@@ -89,11 +101,22 @@
 	app.use(passport.initialize());
 	app.use(passport.session()); // persistent login sessions
 	app.use(flash()); // use connect-flash for flash messages stored in session
+	app.use(__webpack_require__(19)());
 	
-	__webpack_require__(18)(app, passport); // load our routes and pass in our app and fully configured passport
+	__webpack_require__(20)(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
 	
 	app.listen(3000, function () {
-	    console.info('Server listening on port ' + this.address().port);
+	
+	  var skipperSwift = __webpack_require__(28)();
+	  skipperSwift.ensureContainerExists(swiftCredentials, swiftCredentials.container, function (error) {
+	    if (error) {
+	      console.log("unable to create default container", swiftCredentials.container);
+	    } else {
+	      console.log("ensured default container", swiftCredentials.container, "exists");
+	    }
+	  });
+	
+	  console.info('Server listening on port ' + this.address().port);
 	});
 
 /***/ },
@@ -166,58 +189,71 @@
 /* 12 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 	
-	module.exports = {
-		'url': function url(appEnv) {
-			var mongo_uri, mongo_un, mongo_pw, mongo_port, mongo_db_name;
-			if (appEnv.isLocal) {
-				mongo_uri = process.env.TABULOUS_DB_URI;
-				mongo_un = process.env.TABULOUS_DB_UN;
-				mongo_port = process.env.TABULOUS_DB_PORT;
-				mongo_db_name = process.env.TABULOUS_DB;
-				mongo_pw = process.env.TABULOUS_DB_PW;
-			} else {
-				var user_provided = JSON.parse(process.env.VCAP_SERVICES)['user-provided'];
-				var credentials;
-				for (var i = 0; i < user_provided.length; i++) {
-					if (user_provided[i]['name'] == 'tabulous-mongo') {
-						credentials = user_provided[i]['credentials'];
+	module.exports = function () {
+		var vcap = {
+			services: {
+				"user-provided": [{
+					"name": "tabulous-mongo",
+					"label": "user-provided",
+					"credentials": {
+						"uri": process.env.TABULOUS_DB_URI,
+						"port": process.env.TABULOUS_DB_PORT,
+						"user": process.env.TABULOUS_DB_UN,
+						"password": process.env.TABULOUS_DB_PW
 					}
-				}
-				mongo_uri = credentials['uri'];
-				mongo_port = credentials['port'];
-				mongo_db_name = 'production';
-				mongo_un = credentials['user'];
-				mongo_pw = credentials['password'];
+				}],
+				"Object-Storage": [{
+					"name": "tabulous-storage",
+					"label": "Object-Storage",
+					"plan": "standard",
+					"credentials": {
+						"auth_url": process.env.TABULOUS_OBJ_AUTH_URL,
+						"token_url": process.env.TABULOUS_OBJ_TOKEN_URL,
+						"project": process.env.TABULOUS_OBJ_PROJECT,
+						"projectId": process.env.TABULOUS_OBJ_PROJECT_ID,
+						"region": process.env.TABULOUS_OBJ_REGION,
+						"userId": process.env.TABULOUS_OBJ_USER_ID,
+						"username": process.env.TABULOUS_OBJ_UN,
+						"password": process.env.TABULOUS_OBJ_PW,
+						"domainId": process.env.TABULOUS_OBJ_DOMAIN_ID,
+						"domainName": process.env.TABULOUS_OBJ_DOMAIN_NAME
+					}
+				}]
 			}
-			return "mongodb://" + mongo_un + ":" + mongo_pw + "@" + mongo_uri + ":" + mongo_port + "/" + mongo_db_name + "?ssl=true";
-		}
-		//'url' : 'mongodb://<user>:<password>@aws-us-east-1-portal.16.dblayer.com:10228/development'
-		/*
-	    'url' : function(appEnv){ return 'mongodb://'+( appEnv.isLocal ? process.env.TABULOUS_DB_UN : appEnv.services()['user-provided']['credentials']['user'])
-	    		+':'+( appEnv.isLocal == true ? process.env.TABULOUS_DB_PW : appEnv.services()['user-provided']['credentials']['password'])
-	    		+'@'+( appEnv.isLocal == true ? process.env.TABULOUS_DB_URI : appEnv.services()['user-provided']['credentials']['uri'])
-	    		+':'+( appEnv.isLocal == true ? process.env.TABULOUS_DB_PORT : appEnv.services()['user-provided']['credentials']['port'])
-	    		+(appEnv.isLocal == true ? '/development?ssl=true' : '/production');
-	    	}
-	    */
-	};
+		};
+		return vcap;
+	}();
 
 /***/ },
 /* 13 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	module.exports = {
+		'url': function url(appEnv) {
+			var mongoCreds = appEnv.getServiceCreds("tabulous-mongo");
+			mongoCreds.database = process.env.TABULOUS_DB;
+			return "mongodb://" + mongoCreds.user + ":" + mongoCreds.password + "@" + mongoCreds.uri + ":" + mongoCreds.port + "/" + mongoCreds.database + "?ssl=true";
+		}
+	};
+
+/***/ },
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	// load all the things we need
-	var FacebookStrategy = __webpack_require__(14).Strategy;
+	var FacebookStrategy = __webpack_require__(15).Strategy;
 	
 	// load up the user model
-	var User = __webpack_require__(15);
+	var User = __webpack_require__(16);
 	
 	// load the auth variables
-	var configAuth = __webpack_require__(17);
+	var configAuth = __webpack_require__(18);
 	
 	module.exports = function (passport) {
 	
@@ -287,20 +323,20 @@
 	};
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = require("passport-facebook");
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	// load the things we need
 	var mongoose = __webpack_require__(5);
-	var bcrypt = __webpack_require__(16);
+	var bcrypt = __webpack_require__(17);
 	
 	// define the schema for our user model
 	var userSchema = mongoose.Schema({
@@ -346,13 +382,13 @@
 	module.exports = mongoose.model('User', userSchema);
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	module.exports = require("bcrypt-nodejs");
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -368,15 +404,23 @@
 	};
 
 /***/ },
-/* 18 */
+/* 19 */
+/***/ function(module, exports) {
+
+	module.exports = require("skipper");
+
+/***/ },
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	module.exports = function (app, passport) {
+	module.exports = function (app, passport, swiftCredentials) {
 	    var path = __webpack_require__(3);
 	    var __dirname = path.resolve(path.dirname());
-	    var upload = __webpack_require__(19);
+	    var upload = __webpack_require__(21);
+	    var objStorage = __webpack_require__(25).install(swiftCredentials);
+	
 	    // route for home page
 	    app.get('/', function (req, res) {
 	        res.render('index.ejs');
@@ -408,7 +452,7 @@
 	    });
 	
 	    app.post('/upload', isLoggedIn, function (req, res) {
-	        var file = upload.router(req, res);
+	        objStorage.createObject(false, req, res);
 	    });
 	};
 	
@@ -423,15 +467,15 @@
 	}
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var _exports = module.exports = {};
-	var crypto = __webpack_require__(20);
-	var multer = __webpack_require__(21);
-	var mime = __webpack_require__(22);
+	var crypto = __webpack_require__(22);
+	var multer = __webpack_require__(23);
+	var mime = __webpack_require__(24);
 	var storage = multer.diskStorage({
 		destination: function destination(req, file, callback) {
 			callback(null, './public/uploads');
@@ -458,22 +502,190 @@
 	};
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = require("crypto");
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = require("multer");
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = require("mime");
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var request = __webpack_require__(26);
+	var fs = __webpack_require__(10);
+	var mimeTypes = __webpack_require__(27);
+	var crypto = __webpack_require__(22);
+	
+	/*
+		TODO: set request URL automatically from token request
+	*/
+	
+	module.exports = {
+		token: null,
+		accountData: {},
+		expiration: 0,
+		install: function install(credentials) {
+			//Check if the token URL was brought in with the VCAP credentials. If not, add it from environmental variables.
+			if (Object.keys(credentials).indexOf('token_url') == -1) {
+				credentials['token_url'] = process.env.TABULOUS_OBJ_TOKEN_URL;
+			}
+	
+			if (this.checkAccountData(credentials)) {
+				this.accountData = credentials;
+			} else {
+				process.stderr.write('Invalid credentials\n');
+			}
+			return this;
+		},
+	
+		checkAccountData: function checkAccountData(credentials) {
+	
+			['auth_url', 'token_url', 'project', 'projectId', 'region', 'userId', 'username', 'password', 'domainId', 'domainName', 'req_url'].forEach(function (key) {
+				if (Object.keys(credentials).indexOf(key) == -1) {
+					return false;
+				}
+			});
+			return true;
+		},
+	
+		setToken: function setToken(callback) {
+			var form = {
+				"auth": {
+					"identity": {
+						"methods": ["password"],
+						"password": {
+							"user": {
+								"id": this.accountData.userId,
+								"password": this.accountData.password
+							}
+						}
+					},
+					"scope": {
+						"project": {
+							"id": this.accountData.projectId
+						}
+					}
+				}
+			};
+	
+			var options = {
+				json: form,
+				method: 'POST',
+				uri: this.accountData.token_url
+			};
+			var that = this;
+			function processResponse(error, response, body) {
+				if (!error && response.statusCode == 201) {
+					that.token = response.caseless.dict['x-subject-token'];
+					this.expiration = new Date(response.body.token.expires_at);
+					if (callback) {
+						callback(that.token);
+					}
+				} else {
+					process.stderr.write('TOKEN AUTHENTICATION FAILED:\n');
+					process.stderr.write(error + '\n');
+					process.stderr.write(response.statusCode + '\n');
+				}
+			}
+	
+			request.post(options, processResponse);
+		},
+	
+		setContainer: function setContainer(container) {
+			this.container = container;
+		},
+	
+		listContainerContents: function listContainerContents(cont) {
+			var container = this.accountData.container;
+			if (!container) {
+				container = cont;
+			}
+			var that = this;
+			var listReq = function listReq(token) {
+				request({
+					'url': that.accountData.req_url + 'AUTH_' + that.accountData.project_id + '/' + container,
+					'headers': { 'X-Auth-Token': token }
+				}, function (error, response, body) {
+					if (!error && response.statusCode == 200) {
+						console.log(response.body);
+					} else {
+						console.log(error);
+						console.log(response.statusCode);
+					}
+				});
+			};
+			//if the token has expired, get and set a new one first
+			if (this.expiration < new Date()) {
+				this.setToken(listReq);
+			} else {
+				listReq(this.token);
+			}
+		},
+		createObject: function createObject(cont, req, res) {
+			var skipperSwift = __webpack_require__(28)();
+	
+			var container = this.accountData.container;
+			if (!container) {
+				container = cont;
+			}
+			var that = this;
+			crypto.pseudoRandomBytes(16, function (err, raw) {
+				var filename = raw.toString('hex') + '.' + mimeTypes.extension(req.file('wireframe')._files[0].stream.headers['content-type']);
+				req.file('wireframe')._files[0].stream.filename = filename;
+				req.file('wireframe').upload({
+					adapter: __webpack_require__(28),
+					credentials: that.accountData,
+					container: container
+				}, function (err, uploadedFiles) {
+					if (err) {
+						console.log(err);
+						return res.json({
+							success: false,
+							error: err
+						});
+					} else {
+						console.log(that.accountData);
+						return res.json({
+							success: true,
+							path: 'http://dal.objectstorage.open.softlayer.com/v1/AUTH_' + that.accountData.projectId + '/' + that.accountData.container + '/' + filename
+						});
+					}
+				});
+			});
+		}
+	};
+
+/***/ },
+/* 26 */
+/***/ function(module, exports) {
+
+	module.exports = require("request");
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
+	module.exports = require("mime-types");
+
+/***/ },
+/* 28 */
+/***/ function(module, exports) {
+
+	module.exports = require("skipper-openstack");
 
 /***/ }
 /******/ ]);

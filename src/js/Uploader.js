@@ -58,13 +58,12 @@ export default class Uploader{
 				let editor = this.editor;
 				
 				ajax.onload = () => {
-					formElems.form.classList.remove( 'is-uploading' );
 					if( ajax.status >= 200 && ajax.status < 400 ){
 						var data = JSON.parse( ajax.responseText );
 						if(isNew){
-							editor.handle_file_drop(data, 0);
+							editor.handle_file_drop(formElems, data, 0);
 						}else{
-							editor.handle_file_drop(data, 1);							
+							editor.handle_file_drop(formElems, data, 1);							
 						}
 						formElems.form.classList.add( data.success === true ? 'is-success' : 'is-error' );
 						if( !data.success ) errorMsg.textContent = data.error;

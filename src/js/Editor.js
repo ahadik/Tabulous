@@ -350,14 +350,16 @@ export default class Editor{
 		2 = upload a new file
 		
 	*/ 
-	handle_file_drop(file, file_code){
-		file.path = file.path.substring(file.path.indexOf("/") + 1);
+	handle_file_drop(formElems, file, file_code){
 		let image_url = file.path;
-		let image = new Image();
+		let image;
+
 		//let container = this.container;
 		let click = this.click;
 		let editor = this;
-		image.onload = function(){
+		let errorCount = 0;
+		let loadFunc = function(){
+			formElems.form.classList.remove( 'is-uploading' );
 			editor.edit_mode = true;
 			
 			if(file_code == 0){
@@ -404,6 +406,33 @@ export default class Editor{
 				.attr("in", "SourceGraphic");								
 											
 		}
-		image.src = image_url;
+
+		var errorMsg = function(errorCount){
+			return "Error loading wireframe, retrying "+(10-errorCount)+" more times.";
+		}
+
+		let errorFunc = function (evt){
+			if (errorCount < 9){
+				errorCount++;
+				setTimeout(function(){
+					getImage()
+				}, 1000);
+			}else{
+				getImage();
+			}
+		}
+
+		var getImage = function(){
+			try{
+				image = new Image();
+				image.src = image_url;
+				image.onload = loadFunc;
+				image.onerror = errorFunc;
+			}catch(e){
+				e.stopPropagation();
+				console.log(errorMsg(errorCount));
+			}
+		}
+		getImage();
 	}
 }

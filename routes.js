@@ -1,7 +1,9 @@
-module.exports = function(app, passport) {
+module.exports = function(app, passport, swiftCredentials) {
     var path = require('path');
     var __dirname = path.resolve(path.dirname());
     var upload = require('./modules/upload');
+    var objStorage = require('./modules/object_storage/index.js').install(swiftCredentials);
+
     // route for home page
     app.get('/', function(req, res){
         res.render('index.ejs');
@@ -34,7 +36,7 @@ module.exports = function(app, passport) {
     });
 
     app.post('/upload', isLoggedIn, function(req, res){
-        var file = upload.router(req, res);
+        objStorage.createObject(false,req,res);
     });
 
 };
