@@ -47,7 +47,7 @@ app.set(path.join('views', __dirname, 'public'));
 app.set('port', process.env.VCAP_APP_PORT || 1337);
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(cookieParser());
+app.use(cookieParser({ secret: process.env.SESSION_SECRET }));
 
 // required for passport
 app.use(session({ secret: process.env.SESSION_SECRET })); // session secret
