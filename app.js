@@ -44,6 +44,7 @@ require('./modules/config/passport')(passport);
 var __dirname = path.resolve(path.dirname());
 app.use(express.static(path.join(__dirname, 'public')));
 app.set(path.join('views', __dirname, 'public'));
+app.set('port', process.env.VCAP_APP_PORT || 1337);
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -57,7 +58,7 @@ app.use(require("skipper")());
 
 require('./routes.js')(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
 
-app.listen(3000, function() {
+app.listen(app.get('port'), function() {
 
     var skipperSwift = require("skipper-openstack")();
     skipperSwift.ensureContainerExists(swiftCredentials, swiftCredentials.container, function (error) {

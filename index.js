@@ -92,6 +92,7 @@
 	var __dirname = path.resolve(path.dirname());
 	app.use(express.static(path.join(__dirname, 'public')));
 	app.set(path.join('views', __dirname, 'public'));
+	app.set('port', process.env.VCAP_APP_PORT || 1337);
 	app.use(bodyParser.urlencoded({ extended: true }));
 	app.use(bodyParser.json());
 	app.use(cookieParser());
@@ -105,7 +106,7 @@
 	
 	__webpack_require__(20)(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
 	
-	app.listen(3000, function () {
+	app.listen(app.get('port'), function () {
 	
 	  var skipperSwift = __webpack_require__(28)();
 	  skipperSwift.ensureContainerExists(swiftCredentials, swiftCredentials.container, function (error) {
