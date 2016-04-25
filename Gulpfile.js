@@ -132,7 +132,6 @@ gulp.task('server-pack:watch', function(){
   gulp.watch(dirs.js.server.watch, ['server-pack']);
 });
 
-
 //Run the linter on all files marked for linting
 gulp.task('eslint', function () {
   gulp.src(dirs.js.lint)
