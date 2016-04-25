@@ -108,7 +108,7 @@
 	
 	app.listen(app.get('port'), function () {
 	
-	  var skipperSwift = __webpack_require__(28)();
+	  var skipperSwift = __webpack_require__(25)();
 	  skipperSwift.ensureContainerExists(swiftCredentials, swiftCredentials.container, function (error) {
 	    if (error) {
 	      console.log("unable to create default container", swiftCredentials.container);
@@ -419,8 +419,7 @@
 	module.exports = function (app, passport, swiftCredentials) {
 	    var path = __webpack_require__(3);
 	    var __dirname = path.resolve(path.dirname());
-	    var upload = __webpack_require__(21);
-	    var objStorage = __webpack_require__(25).install(swiftCredentials);
+	    var objStorage = __webpack_require__(21).install(swiftCredentials);
 	
 	    // route for home page
 	    app.get('/', function (req, res) {
@@ -473,63 +472,10 @@
 
 	'use strict';
 	
-	var _exports = module.exports = {};
-	var crypto = __webpack_require__(22);
-	var multer = __webpack_require__(23);
-	var mime = __webpack_require__(24);
-	var storage = multer.diskStorage({
-		destination: function destination(req, file, callback) {
-			callback(null, './public/uploads');
-		},
-		filename: function filename(req, file, cb) {
-			crypto.pseudoRandomBytes(16, function (err, raw) {
-				cb(null, raw.toString('hex') + '.' + mime.extension(file.mimetype));
-			});
-		}
-	});
-	
-	var upload = multer({ storage: storage }).single('wireframe');
-	
-	_exports.router = function (req, res) {
-		upload(req, res, function (err) {
-			if (err) {
-				console.log(err);
-				return res.end('Error uploading file.');
-			}
-			req.file.success = true;
-			res.json(req.file);
-			return req.file;
-		});
-	};
-
-/***/ },
-/* 22 */
-/***/ function(module, exports) {
-
-	module.exports = require("crypto");
-
-/***/ },
-/* 23 */
-/***/ function(module, exports) {
-
-	module.exports = require("multer");
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	module.exports = require("mime");
-
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var request = __webpack_require__(26);
+	var request = __webpack_require__(22);
 	var fs = __webpack_require__(10);
-	var mimeTypes = __webpack_require__(27);
-	var crypto = __webpack_require__(22);
+	var mimeTypes = __webpack_require__(23);
+	var crypto = __webpack_require__(24);
 	
 	/*
 		TODO: set request URL automatically from token request
@@ -637,7 +583,7 @@
 			}
 		},
 		createObject: function createObject(cont, req, res) {
-			var skipperSwift = __webpack_require__(28)();
+			var skipperSwift = __webpack_require__(25)();
 	
 			var container = this.accountData.container;
 			if (!container) {
@@ -648,7 +594,7 @@
 				var filename = raw.toString('hex') + '.' + mimeTypes.extension(req.file('wireframe')._files[0].stream.headers['content-type']);
 				req.file('wireframe')._files[0].stream.filename = filename;
 				req.file('wireframe').upload({
-					adapter: __webpack_require__(28),
+					adapter: __webpack_require__(25),
 					credentials: that.accountData,
 					container: container
 				}, function (err, uploadedFiles) {
@@ -671,19 +617,25 @@
 	};
 
 /***/ },
-/* 26 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = require("request");
 
 /***/ },
-/* 27 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = require("mime-types");
 
 /***/ },
-/* 28 */
+/* 24 */
+/***/ function(module, exports) {
+
+	module.exports = require("crypto");
+
+/***/ },
+/* 25 */
 /***/ function(module, exports) {
 
 	module.exports = require("skipper-openstack");
