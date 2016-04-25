@@ -5,7 +5,7 @@ var express = require('express'),
     mongoose = require('mongoose'),
     passport = require('passport'),
     flash = require('connect-flash'),
-    cookieParser = require('cookie-parser'),
+    //cookieParser = require('cookie-parser'),
     session = require('express-session'),
     fs = require('fs');
 
@@ -34,6 +34,7 @@ var options = {
     sslCA: [fs.readFileSync('private/cert.pem')] // cert from compose.io dashboard
   }
 }
+
 mongoose.connect(configDB.url(appEnv), options); // connect to our database
 
 // set the view engine to ejs
@@ -44,13 +45,20 @@ require('./modules/config/passport')(passport);
 var __dirname = path.resolve(path.dirname());
 app.use(express.static(path.join(__dirname, 'public')));
 app.set(path.join('views', __dirname, 'public'));
-app.set('port', process.env.VCAP_APP_PORT || 1337);
+app.set('port', process.env.VCAP_APP_PORT || 3000);
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use(cookieParser({ secret: process.env.SESSION_SECRET }));
+//app.use(cookieParser({ secret: process.env.SESSION_SECRET }));
 
 // required for passport
-app.use(session({ secret: process.env.SESSION_SECRET })); // session secret
+//app.set('trust proxy', 1) // trust first proxy 
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {}
+}));
+
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
