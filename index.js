@@ -53,15 +53,16 @@
 	    mongoose = __webpack_require__(5),
 	    passport = __webpack_require__(6),
 	    flash = __webpack_require__(7),
-	    cookieParser = __webpack_require__(8),
-	    session = __webpack_require__(9),
-	    fs = __webpack_require__(10);
 	
-	__webpack_require__(11).install();
+	//cookieParser = require('cookie-parser'),
+	session = __webpack_require__(8),
+	    fs = __webpack_require__(9);
+	
+	__webpack_require__(10).install();
 	
 	var vcapLocal = null;
 	try {
-	  vcapLocal = __webpack_require__(12);
+	  vcapLocal = __webpack_require__(11);
 	} catch (e) {}
 	
 	var appEnvOpts = vcapLocal ? { vcap: vcapLocal } : {};
@@ -74,7 +75,7 @@
 	swiftCredentials.container = process.env.TABULOUS_OBJ_CONTAINER;
 	swiftCredentials.req_url = req_url;
 	
-	var configDB = __webpack_require__(13);
+	var configDB = __webpack_require__(12);
 	var options = {
 	  mongos: {
 	    ssl: true,
@@ -82,33 +83,41 @@
 	    sslCA: [fs.readFileSync('private/cert.pem')] // cert from compose.io dashboard
 	  }
 	};
+	
 	mongoose.connect(configDB.url(appEnv), options); // connect to our database
 	
 	// set the view engine to ejs
 	app.set('view engine', 'ejs');
 	
-	__webpack_require__(14)(passport);
+	__webpack_require__(13)(passport);
 	
 	var __dirname = path.resolve(path.dirname());
 	app.use(express.static(path.join(__dirname, 'public')));
 	app.set(path.join('views', __dirname, 'public'));
-	app.set('port', process.env.VCAP_APP_PORT || 1337);
+	app.set('port', process.env.VCAP_APP_PORT || 3000);
 	app.use(bodyParser.urlencoded({ extended: true }));
 	app.use(bodyParser.json());
-	app.use(cookieParser());
+	//app.use(cookieParser({ secret: process.env.SESSION_SECRET }));
 	
 	// required for passport
-	app.use(session({ secret: process.env.SESSION_SECRET })); // session secret
+	//app.set('trust proxy', 1) // trust first proxy
+	app.use(session({
+	  secret: process.env.SESSION_SECRET,
+	  resave: false,
+	  saveUninitialized: true,
+	  cookie: {}
+	}));
+	
 	app.use(passport.initialize());
 	app.use(passport.session()); // persistent login sessions
 	app.use(flash()); // use connect-flash for flash messages stored in session
-	app.use(__webpack_require__(19)());
+	app.use(__webpack_require__(18)());
 	
-	__webpack_require__(20)(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
+	__webpack_require__(19)(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
 	
 	app.listen(app.get('port'), function () {
 	
-	  var skipperSwift = __webpack_require__(25)();
+	  var skipperSwift = __webpack_require__(24)();
 	  skipperSwift.ensureContainerExists(swiftCredentials, swiftCredentials.container, function (error) {
 	    if (error) {
 	      console.log("unable to create default container", swiftCredentials.container);
@@ -166,28 +175,22 @@
 /* 8 */
 /***/ function(module, exports) {
 
-	module.exports = require("cookie-parser");
+	module.exports = require("express-session");
 
 /***/ },
 /* 9 */
 /***/ function(module, exports) {
 
-	module.exports = require("express-session");
+	module.exports = require("fs");
 
 /***/ },
 /* 10 */
 /***/ function(module, exports) {
 
-	module.exports = require("fs");
-
-/***/ },
-/* 11 */
-/***/ function(module, exports) {
-
 	module.exports = require("source-map-support");
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -228,7 +231,7 @@
 	}();
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -242,19 +245,19 @@
 	};
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	// load all the things we need
-	var FacebookStrategy = __webpack_require__(15).Strategy;
+	var FacebookStrategy = __webpack_require__(14).Strategy;
 	
 	// load up the user model
-	var User = __webpack_require__(16);
+	var User = __webpack_require__(15);
 	
 	// load the auth variables
-	var configAuth = __webpack_require__(18);
+	var configAuth = __webpack_require__(17);
 	
 	module.exports = function (passport) {
 	
@@ -324,20 +327,20 @@
 	};
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports) {
 
 	module.exports = require("passport-facebook");
 
 /***/ },
-/* 16 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	// load the things we need
 	var mongoose = __webpack_require__(5);
-	var bcrypt = __webpack_require__(17);
+	var bcrypt = __webpack_require__(16);
 	
 	// define the schema for our user model
 	var userSchema = mongoose.Schema({
@@ -383,13 +386,13 @@
 	module.exports = mongoose.model('User', userSchema);
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports = require("bcrypt-nodejs");
 
 /***/ },
-/* 18 */
+/* 17 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -405,13 +408,13 @@
 	};
 
 /***/ },
-/* 19 */
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = require("skipper");
 
 /***/ },
-/* 20 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -419,7 +422,7 @@
 	module.exports = function (app, passport, swiftCredentials) {
 	    var path = __webpack_require__(3);
 	    var __dirname = path.resolve(path.dirname());
-	    var objStorage = __webpack_require__(21).install(swiftCredentials);
+	    var objStorage = __webpack_require__(20).install(swiftCredentials);
 	
 	    // route for home page
 	    app.get('/', function (req, res) {
@@ -467,15 +470,15 @@
 	}
 
 /***/ },
-/* 21 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var request = __webpack_require__(22);
-	var fs = __webpack_require__(10);
-	var mimeTypes = __webpack_require__(23);
-	var crypto = __webpack_require__(24);
+	var request = __webpack_require__(21);
+	var fs = __webpack_require__(9);
+	var mimeTypes = __webpack_require__(22);
+	var crypto = __webpack_require__(23);
 	
 	/*
 		TODO: set request URL automatically from token request
@@ -583,7 +586,7 @@
 			}
 		},
 		createObject: function createObject(cont, req, res) {
-			var skipperSwift = __webpack_require__(25)();
+			var skipperSwift = __webpack_require__(24)();
 	
 			var container = this.accountData.container;
 			if (!container) {
@@ -594,7 +597,7 @@
 				var filename = raw.toString('hex') + '.' + mimeTypes.extension(req.file('wireframe')._files[0].stream.headers['content-type']);
 				req.file('wireframe')._files[0].stream.filename = filename;
 				req.file('wireframe').upload({
-					adapter: __webpack_require__(25),
+					adapter: __webpack_require__(24),
 					credentials: that.accountData,
 					container: container
 				}, function (err, uploadedFiles) {
@@ -617,25 +620,25 @@
 	};
 
 /***/ },
-/* 22 */
+/* 21 */
 /***/ function(module, exports) {
 
 	module.exports = require("request");
 
 /***/ },
-/* 23 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = require("mime-types");
 
 /***/ },
-/* 24 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = require("crypto");
 
 /***/ },
-/* 25 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = require("skipper-openstack");
