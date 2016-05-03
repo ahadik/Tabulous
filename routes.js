@@ -2,6 +2,7 @@ module.exports = function(app, passport, swiftCredentials) {
     var path = require('path');
     var __dirname = path.resolve(path.dirname());
     var objStorage = require('./modules/object_storage/index.js').install(swiftCredentials);
+    var converter = require('./modules/conversion/index.js');
 
     // route for home page
     app.get('/', function(req, res){
@@ -36,6 +37,10 @@ module.exports = function(app, passport, swiftCredentials) {
 
     app.post('/upload', isLoggedIn, function(req, res){
         objStorage.createObject(false,req,res);
+    });
+
+    app.post('/convert', function(req,res){
+        converter.toPDF(req,res);
     });
 
 };

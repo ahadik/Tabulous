@@ -57,12 +57,13 @@
 	//cookieParser = require('cookie-parser'),
 	session = __webpack_require__(8),
 	    fs = __webpack_require__(9);
+	__webpack_require__(10);
 	
-	__webpack_require__(10).install();
+	__webpack_require__(11).install();
 	
 	var vcapLocal = null;
 	try {
-	  vcapLocal = __webpack_require__(11);
+	  vcapLocal = __webpack_require__(12);
 	} catch (e) {}
 	
 	var appEnvOpts = vcapLocal ? { vcap: vcapLocal } : {};
@@ -75,7 +76,7 @@
 	swiftCredentials.container = process.env.TABULOUS_OBJ_CONTAINER;
 	swiftCredentials.req_url = req_url;
 	
-	var configDB = __webpack_require__(12);
+	var configDB = __webpack_require__(13);
 	var options = {
 	  mongos: {
 	    ssl: true,
@@ -89,7 +90,7 @@
 	// set the view engine to ejs
 	app.set('view engine', 'ejs');
 	
-	__webpack_require__(13)(passport);
+	__webpack_require__(14)(passport);
 	
 	var __dirname = path.resolve(path.dirname());
 	app.use(express.static(path.join(__dirname, 'public')));
@@ -112,13 +113,13 @@
 	app.use(passport.initialize());
 	app.use(passport.session()); // persistent login sessions
 	app.use(flash()); // use connect-flash for flash messages stored in session
-	app.use(__webpack_require__(18)());
+	app.use(__webpack_require__(19)());
 	
-	__webpack_require__(19)(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
+	__webpack_require__(20)(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
 	
 	app.listen(app.get('port'), function () {
 	
-	  var skipperSwift = __webpack_require__(24)();
+	  var skipperSwift = __webpack_require__(25)();
 	  skipperSwift.ensureContainerExists(swiftCredentials, swiftCredentials.container, function (error) {
 	    if (error) {
 	      console.log("unable to create default container", swiftCredentials.container);
@@ -188,10 +189,16 @@
 /* 10 */
 /***/ function(module, exports) {
 
-	module.exports = require("source-map-support");
+	module.exports = require("babel-core/register");
 
 /***/ },
 /* 11 */
+/***/ function(module, exports) {
+
+	module.exports = require("source-map-support");
+
+/***/ },
+/* 12 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -232,7 +239,7 @@
 	}();
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -246,19 +253,19 @@
 	};
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	// load all the things we need
-	var FacebookStrategy = __webpack_require__(14).Strategy;
+	var FacebookStrategy = __webpack_require__(15).Strategy;
 	
 	// load up the user model
-	var User = __webpack_require__(15);
+	var User = __webpack_require__(16);
 	
 	// load the auth variables
-	var configAuth = __webpack_require__(17);
+	var configAuth = __webpack_require__(18);
 	
 	module.exports = function (passport) {
 	
@@ -328,20 +335,20 @@
 	};
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = require("passport-facebook");
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	// load the things we need
 	var mongoose = __webpack_require__(5);
-	var bcrypt = __webpack_require__(16);
+	var bcrypt = __webpack_require__(17);
 	
 	// define the schema for our user model
 	var userSchema = mongoose.Schema({
@@ -387,13 +394,13 @@
 	module.exports = mongoose.model('User', userSchema);
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	module.exports = require("bcrypt-nodejs");
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -409,13 +416,13 @@
 	};
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 	module.exports = require("skipper");
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -423,7 +430,8 @@
 	module.exports = function (app, passport, swiftCredentials) {
 	    var path = __webpack_require__(3);
 	    var __dirname = path.resolve(path.dirname());
-	    var objStorage = __webpack_require__(20).install(swiftCredentials);
+	    var objStorage = __webpack_require__(21).install(swiftCredentials);
+	    var converter = __webpack_require__(26);
 	
 	    // route for home page
 	    app.get('/', function (req, res) {
@@ -458,6 +466,10 @@
 	    app.post('/upload', isLoggedIn, function (req, res) {
 	        objStorage.createObject(false, req, res);
 	    });
+	
+	    app.post('/convert', function (req, res) {
+	        converter.toPDF(req, res);
+	    });
 	};
 	
 	// route middleware to make sure a user is logged in
@@ -471,15 +483,15 @@
 	}
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var request = __webpack_require__(21);
+	var request = __webpack_require__(22);
 	var fs = __webpack_require__(9);
-	var mimeTypes = __webpack_require__(22);
-	var crypto = __webpack_require__(23);
+	var mimeTypes = __webpack_require__(23);
+	var crypto = __webpack_require__(24);
 	
 	/*
 		TODO: set request URL automatically from token request
@@ -587,7 +599,7 @@
 			}
 		},
 		createObject: function createObject(cont, req, res) {
-			var skipperSwift = __webpack_require__(24)();
+			var skipperSwift = __webpack_require__(25)();
 	
 			var container = this.accountData.container;
 			if (!container) {
@@ -598,7 +610,7 @@
 				var filename = raw.toString('hex') + '.' + mimeTypes.extension(req.file('wireframe')._files[0].stream.headers['content-type']);
 				req.file('wireframe')._files[0].stream.filename = filename;
 				req.file('wireframe').upload({
-					adapter: __webpack_require__(24),
+					adapter: __webpack_require__(25),
 					credentials: that.accountData,
 					container: container
 				}, function (err, uploadedFiles) {
@@ -621,28 +633,117 @@
 	};
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = require("request");
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = require("mime-types");
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = require("crypto");
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports) {
 
 	module.exports = require("skipper-openstack");
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
+	
+	var Rsvg = __webpack_require__(27).Rsvg;
+	var request = __webpack_require__(22).defaults({ encoding: null });
+	var cfenv = __webpack_require__(2);
+	var fs = __webpack_require__(9);
+	var Readable = __webpack_require__(28).Readable;
+	
+	function parseSVG(svgText, resolve) {
+		var svg = void 0,
+		    sections = void 0;
+		var svgStart = void 0;
+		var regex = /[^\"]*/;
+	
+		var _svgText$split = svgText.split("xlink:href=\"");
+	
+		var _svgText$split2 = _toArray(_svgText$split);
+	
+		svgStart = _svgText$split2[0];
+		sections = _svgText$split2.slice(1);
+	
+	
+		var section = sections.shift();
+		//extract the url from the start of the section
+		var url = section.match(regex)[0];
+		//remove the url from the section
+		section = section.replace(url, '');
+	
+		request.get(url, function (error, response, body) {
+			if (!error && response.statusCode == 200) {
+				var data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
+				resolve(svgStart + "xlink:href=\"" + data + section);
+			}
+		});
+	}
+	
+	module.exports = {
+		toPDF: function toPDF(req, res) {
+			var svg = new Rsvg();
+			var svgText = req.body.svg;
+			var fileName = req.body.projectID;
+			var p = new Promise(function (resolve) {
+				parseSVG(svgText, resolve);
+			});
+			p.then(function (results) {
+				svg.on('finish', function () {
+					res.attachment(fileName + '.pdf');
+					res.setHeader("Content-type", "application/pdf");
+					var rs = Readable();
+					rs._read = function () {
+						rs.push(svg.render({
+							format: 'pdf',
+							width: svg.width,
+							height: svg.height
+						}).data);
+						rs.push(null);
+					};
+					rs.pipe(res);
+					res.end();
+				});
+				var rs = Readable();
+				rs._read = function () {
+					rs.push(results);
+					rs.push(null);
+				};
+	
+				rs.pipe(svg);
+			});
+		}
+	};
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
+	module.exports = require("librsvg");
+
+/***/ },
+/* 28 */
+/***/ function(module, exports) {
+
+	module.exports = require("stream");
 
 /***/ }
 /******/ ]);

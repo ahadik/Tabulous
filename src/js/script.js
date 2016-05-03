@@ -33,6 +33,18 @@ window.onload = () => {
 	let header_offset = $('header h1').offset().top+50;
 	let max_offset = $('#interface_wrapper').offset().top-header_offset;
 
+	document.querySelector('.sidebar__report-gen').addEventListener('click', () => {
+		var target = document.querySelector('#interface');
+		var wrap = document.createElement('div');
+		wrap.appendChild(target.cloneNode(true));
+		var svgText = wrap.innerHTML;
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', 'convert');
+		xhr.send({
+			svg: svgText,
+			projectID: 123
+		});
+	});
 
 	$('#canvas').scroll(function(){
 		var offset = $('#interface_wrapper').offset().top-header_offset;
