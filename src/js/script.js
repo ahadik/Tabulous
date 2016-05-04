@@ -40,10 +40,30 @@ window.onload = () => {
 		var svgText = wrap.innerHTML;
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', 'convert');
-		xhr.send({
-			svg: svgText,
-			projectID: 123
-		});
+		var svgData = new FormData();
+		svgData.append('svg', svgText);
+		svgData.append('projectID', 123);
+
+		xhr.responseType = 'blob';
+
+		xhr.onload = function(e) {
+			if (this.status == 200) {
+				// Note: .response instead of .responseText
+				var blob = new Blob([this.response], {type: 'image/pdf'});
+				var a = document.createElement("a");
+				document.body.appendChild(a);
+				a.style = "display: none";
+				((blob, fileName) => {
+				    var url = window.URL.createObjectURL(blob);
+				    a.href = url;
+				    a.download = fileName;
+				    a.click();
+				    window.URL.revokeObjectURL(url);
+				})(blob, 'tabulous.pdf');
+			}
+		};
+
+		xhr.send(svgData);
 	});
 
 	$('#canvas').scroll(function(){

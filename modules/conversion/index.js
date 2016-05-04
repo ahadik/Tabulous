@@ -5,9 +5,11 @@ var request = require('request').defaults({ encoding: null });
 var cfenv = require('cfenv');
 var fs = require('fs');
 var Readable = require('stream').Readable;
+require('babel-core/register');
 
 
 function parseSVG(svgText, resolve){
+	
 	let svg, sections;
 	let svgStart;
 	let regex = /[^\"]*/;
@@ -18,7 +20,6 @@ function parseSVG(svgText, resolve){
 	let url = section.match(regex)[0];
 	//remove the url from the section
 	section = section.replace(url,'');
-
 	request.get(url, (error, response, body) => {
 		if (!error && response.statusCode == 200) {
 			let data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
@@ -37,7 +38,7 @@ module.exports = {
 		p.then(results => {
 			svg.on('finish', function() {
 				res.attachment(fileName+'.pdf');
-				res.setHeader("Content-type", "application/pdf");
+				res.setHeader("Content-type", "application/force-download");
 				var rs = Readable();
 				rs._read = function(){
 					rs.push(svg.render({
@@ -47,8 +48,9 @@ module.exports = {
 					}).data);
 					rs.push(null);
 				}
+				console.log('Finished!');
 				rs.pipe(res);
-				res.end();
+				//res.end();
 			});
 			var rs = Readable();
 			rs._read = function () {

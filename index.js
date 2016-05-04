@@ -669,8 +669,10 @@
 	var cfenv = __webpack_require__(2);
 	var fs = __webpack_require__(9);
 	var Readable = __webpack_require__(28).Readable;
+	__webpack_require__(10);
 	
 	function parseSVG(svgText, resolve) {
+	
 		var svg = void 0,
 		    sections = void 0;
 		var svgStart = void 0;
@@ -689,7 +691,6 @@
 		var url = section.match(regex)[0];
 		//remove the url from the section
 		section = section.replace(url, '');
-	
 		request.get(url, function (error, response, body) {
 			if (!error && response.statusCode == 200) {
 				var data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
@@ -709,7 +710,7 @@
 			p.then(function (results) {
 				svg.on('finish', function () {
 					res.attachment(fileName + '.pdf');
-					res.setHeader("Content-type", "application/pdf");
+					res.setHeader("Content-type", "application/force-download");
 					var rs = Readable();
 					rs._read = function () {
 						rs.push(svg.render({
@@ -719,8 +720,9 @@
 						}).data);
 						rs.push(null);
 					};
+					console.log('Finished!');
 					rs.pipe(res);
-					res.end();
+					//res.end();
 				});
 				var rs = Readable();
 				rs._read = function () {
