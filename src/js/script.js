@@ -33,6 +33,38 @@ window.onload = () => {
 	let header_offset = $('header h1').offset().top+50;
 	let max_offset = $('#interface_wrapper').offset().top-header_offset;
 
+	document.querySelector('.sidebar__report-gen').addEventListener('click', () => {
+		var target = document.querySelector('#interface');
+		var wrap = document.createElement('div');
+		wrap.appendChild(target.cloneNode(true));
+		var svgText = wrap.innerHTML;
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', 'convert');
+		var svgData = new FormData();
+		svgData.append('svg', svgText);
+		svgData.append('projectID', 123);
+
+		xhr.responseType = 'blob';
+
+		xhr.onload = function(e) {
+			if (this.status == 200) {
+				// Note: .response instead of .responseText
+				var blob = new Blob([this.response], {type: 'image/pdf'});
+				var a = document.createElement("a");
+				document.body.appendChild(a);
+				a.style = "display: none";
+				((blob, fileName) => {
+				    var url = window.URL.createObjectURL(blob);
+				    a.href = url;
+				    a.download = fileName;
+				    a.click();
+				    window.URL.revokeObjectURL(url);
+				})(blob, 'tabulous.pdf');
+			}
+		};
+
+		xhr.send(svgData);
+	});
 
 	$('#canvas').scroll(function(){
 		var offset = $('#interface_wrapper').offset().top-header_offset;

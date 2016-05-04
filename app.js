@@ -8,6 +8,7 @@ var express = require('express'),
     //cookieParser = require('cookie-parser'),
     session = require('express-session'),
     fs = require('fs');
+    require('babel-core/register');
 
 require('source-map-support').install();
 
