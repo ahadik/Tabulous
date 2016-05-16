@@ -264,7 +264,7 @@ gulp.task('build', ['rsvg-install', 'client-pack', 'server-pack', 'eslint', 'htm
 
 gulp.task('build-travis', ['client-pack', 'server-pack', 'eslint', 'html', 'sass', 'images']);
 
-gulp.task('test', ['build']);
+gulp.task('test', ['build-travis']);
 
 gulp.task('watch', ['client-pack:watch', 'server-pack:watch', 'eslint:watch', 'html:watch', 'sass:watch', 'images:watch']);
 
