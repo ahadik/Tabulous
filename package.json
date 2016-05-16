@@ -8,6 +8,7 @@
     "node": "node index.js",
     "test": "npm run gulp test",
     "build": "npm run gulp build",
+    "build-travis": "npm run gulp build-travis",
     "postinstall": "npm run install:bower",
     "install:bower": "npm run bower install",
     "install:bower:root": "./node_modules/.bin/bower install --allow-root",
