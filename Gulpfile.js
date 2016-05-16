@@ -248,23 +248,11 @@ gulp.task('browser-sync', ['nodemon'], function () {
 });
 
 //////////////////////////////
-// Install LibRSVG
-//////////////////////////////
-gulp.task('rsvg-install', function(){
-	exec('npm install librsvg', function (err, stdout, stderr) {
-		console.log(stdout);
-		console.log(stderr);
-	});
-});
-
-//////////////////////////////
 // Running Tasks
 //////////////////////////////
-gulp.task('build', ['rsvg-install', 'client-pack', 'server-pack', 'eslint', 'html', 'sass', 'images']);
+gulp.task('build', ['client-pack', 'server-pack', 'eslint', 'html', 'sass', 'images']);
 
-gulp.task('build-travis', ['client-pack', 'server-pack', 'eslint', 'html', 'sass', 'images']);
-
-gulp.task('test', ['build-travis']);
+gulp.task('test', ['build']);
 
 gulp.task('watch', ['client-pack:watch', 'server-pack:watch', 'eslint:watch', 'html:watch', 'sass:watch', 'images:watch']);
 
