@@ -2,6 +2,7 @@ language: node_js
 sudo: true
 node_js:
   - '5.9'
+before_install: sudo apt-get install librsvg2-dev
 before_deploy: npm run build
 
 # Deploy
