@@ -1,0 +1,55 @@
+{
+  /**
+   * Application configuration section
+   * http://pm2.keymetrics.io/docs/usage/application-declaration/
+   */
+  apps : [
+
+    // First application
+    {
+      name      : "Tabulous",
+      script    : "index.js",
+      env: {
+        "FACEBOOK_CLIENT_ID": "1162806143750513",
+        "FACEBOOK_CLIENT_SECRET":"1568e15651287b955f4a8b486e464011",
+        "SESSION_SECRET":"XivbQjVwcasDw7K3NE9M",
+        "TABULOUS_DB_UN":"alexdev",
+        "TABULOUS_DB_PW":"7DZ6ZGYBJXnTGYwmV2vd",
+        "TABULOUS_DB_URI":"aws-us-east-1-portal.16.dblayer.com",
+        "TABULOUS_DB":"production",
+        "TABULOUS_DB_PORT":"10228",
+        "TABULOUS_OBJ_TOKEN_URL":"https://identity.open.softlayer.com/v3/auth/tokens",
+        "TABULOUS_OBJ_AUTH_URL":"https://identity.open.softlayer.com",
+        "TABULOUS_OBJ_PROJECT":"object_storage_9b8229c3_20bf_42be_8d7c_a5a37c574680",
+        "TABULOUS_OBJ_PROJECT_ID":"75a955fd08674063893f0fc7e2928e33",
+        "TABULOUS_OBJ_REGION":"dallas",
+        "TABULOUS_OBJ_USER_ID":"8edc503e694642cbab6a57ceed008967",
+        "TABULOUS_OBJ_UN":"Admin_a64fb441699a88f63f84fff794bc5ca270d8bbed",
+        "TABULOUS_OBJ_PW":"A9k0]pmqZ}~&Hg58",
+        "TABULOUS_OBJ_DOMAIN_ID":"f6c59e50401a4f73815e15b9ad05dbc6",
+        "TABULOUS_OBJ_DOMAIN_NAME":"905001",
+        "TABULOUS_FACEBOOK_CALLBACK":"http://www.betabulous.com/auth/facebook/callback",
+        "BLUEMIX_PW":"P@ssword123",
+        "TABULOUS_OBJ_CONTAINER":"prod_uploads"
+      },
+      env_production : {
+        NODE_ENV: "production"
+      }
+    }
+  ],
+
+  /**
+   * Deployment section
+   * http://pm2.keymetrics.io/docs/usage/deployment/
+   */
+  deploy : {
+    production : {
+      user : "root",
+      host : "173.192.106.140",
+      ref  : "origin/master",
+      repo : "git@github.com:ahadik/Tabulous.git",
+      path : "/root/Tabulous",
+      "post-deploy" : "npm install && gulp build && pm2 startOrRestart ecosystem.json --env production"
+    }
+  }
+}
