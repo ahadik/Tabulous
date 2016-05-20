@@ -47,7 +47,11 @@ var __dirname = path.resolve(path.dirname());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 app.set(path.join('views', __dirname, 'public'));
-app.set('port', process.env.VCAP_APP_PORT || 3000);
+if(process.env.NODE_ENV){
+  app.set('port', process.env.VCAP_APP_PORT || 80);
+}else{
+  app.set('port', 3000);
+}
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 //app.use(cookieParser({ secret: process.env.SESSION_SECRET }));
