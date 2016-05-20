@@ -49,7 +49,7 @@
       ref  : "origin/master",
       repo : "git@github.com:ahadik/Tabulous.git",
       path : "/root/Tabulous",
-      "post-deploy" : "npm install && gulp build && pm2 startOrRestart ecosystem.json --env production"
+      "post-deploy" : "npm install && pm2 startOrRestart ecosystem.json --env production"
     }
   }
 }
