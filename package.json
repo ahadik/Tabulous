@@ -65,7 +65,7 @@
     "webpack-node-externals": "^1.1.0"
   },
   "engines": {
-    "node": "^4.1",
-    "npm": "^2.14"
+    "node": "5.9.0",
+    "npm": "3.7.3"
   }
 }
