@@ -1,3 +1,5 @@
+#!/bin/bash
+
 . /root/.tabulous
 cat <<<$ENV_PW | decrypt private/tabulous-env.enc private/tabulous-env
 cat <<<$ENV_PW |  decrypt private/cert.pem.enc private/cert.pem
