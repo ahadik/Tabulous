@@ -49,7 +49,7 @@
       ref  : "origin/master",
       repo : "git@github.com:ahadik/Tabulous.git",
       path : "/root/Tabulous",
-      "post-deploy" : "source /root/.tabulous && echo $ENV_PW && apt-get install librsvg2-dev && npm install -g gulp && npm install -g bower && npm install && bower install --allow-root && npm run decrypt && source private/tabulous-env && gulp build && pm2 startOrRestart ecosystem.json --env production"
+      "post-deploy" : "source /root/.tabulous && apt-get install librsvg2-dev && npm install -g gulp && npm install -g bower && npm install && bower install --allow-root && npm run decrypt && source private/tabulous-env && gulp build && pm2 startOrRestart ecosystem.json --env production"
     }
   }
 }
