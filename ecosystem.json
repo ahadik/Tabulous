@@ -10,27 +10,27 @@
       name      : "Tabulous",
       script    : "index.js",
       env: {
-        "FACEBOOK_CLIENT_ID": "1162806143750513",
-        "FACEBOOK_CLIENT_SECRET":"1568e15651287b955f4a8b486e464011",
-        "SESSION_SECRET":"XivbQjVwcasDw7K3NE9M",
-        "TABULOUS_DB_UN":"alexdev",
-        "TABULOUS_DB_PW":"7DZ6ZGYBJXnTGYwmV2vd",
-        "TABULOUS_DB_URI":"aws-us-east-1-portal.16.dblayer.com",
-        "TABULOUS_DB":"production",
-        "TABULOUS_DB_PORT":"10228",
-        "TABULOUS_OBJ_TOKEN_URL":"https://identity.open.softlayer.com/v3/auth/tokens",
-        "TABULOUS_OBJ_AUTH_URL":"https://identity.open.softlayer.com",
-        "TABULOUS_OBJ_PROJECT":"object_storage_9b8229c3_20bf_42be_8d7c_a5a37c574680",
-        "TABULOUS_OBJ_PROJECT_ID":"75a955fd08674063893f0fc7e2928e33",
-        "TABULOUS_OBJ_REGION":"dallas",
-        "TABULOUS_OBJ_USER_ID":"8edc503e694642cbab6a57ceed008967",
-        "TABULOUS_OBJ_UN":"Admin_a64fb441699a88f63f84fff794bc5ca270d8bbed",
-        "TABULOUS_OBJ_PW":"A9k0]pmqZ}~&Hg58",
-        "TABULOUS_OBJ_DOMAIN_ID":"f6c59e50401a4f73815e15b9ad05dbc6",
-        "TABULOUS_OBJ_DOMAIN_NAME":"905001",
-        "TABULOUS_FACEBOOK_CALLBACK":"http://www.betabulous.com/auth/facebook/callback",
-        "BLUEMIX_PW":"P@ssword123",
-        "TABULOUS_OBJ_CONTAINER":"prod_uploads"
+        "FACEBOOK_CLIENT_ID": process.env.FACEBOOK_CLIENT_ID,
+        "FACEBOOK_CLIENT_SECRET":process.env.FACEBOOK_CLIENT_SECRET,
+        "SESSION_SECRET":process.env.SESSION_SECRET,
+        "TABULOUS_DB_UN":process.env.TABULOUS_DB_UN,
+        "TABULOUS_DB_PW":process.env.TABULOUS_DB_PW,
+        "TABULOUS_DB_URI":process.env.TABULOUS_DB_URI,
+        "TABULOUS_DB":process.env.TABULOUS_DB,
+        "TABULOUS_DB_PORT":process.env.TABULOUS_DB_PORT,
+        "TABULOUS_OBJ_TOKEN_URL":process.env.TABULOUS_OBJ_TOKEN_URL,
+        "TABULOUS_OBJ_AUTH_URL":process.env.TABULOUS_OBJ_AUTH_URL,
+        "TABULOUS_OBJ_PROJECT":process.env.TABULOUS_OBJ_PROJECT,
+        "TABULOUS_OBJ_PROJECT_ID":process.env.TABULOUS_OBJ_PROJECT_ID,
+        "TABULOUS_OBJ_REGION":process.env.TABULOUS_OBJ_REGION,
+        "TABULOUS_OBJ_USER_ID":process.env.TABULOUS_OBJ_USER_ID,
+        "TABULOUS_OBJ_UN":process.env.TABULOUS_OBJ_UN,
+        "TABULOUS_OBJ_PW":process.env.TABULOUS_OBJ_PW,
+        "TABULOUS_OBJ_DOMAIN_ID":process.env.TABULOUS_OBJ_DOMAIN_ID,
+        "TABULOUS_OBJ_DOMAIN_NAME":process.env.TABULOUS_OBJ_DOMAIN_NAME,
+        "TABULOUS_FACEBOOK_CALLBACK":process.env.TABULOUS_FACEBOOK_CALLBACK,
+        "BLUEMIX_PW":process.env.BLUEMIX_PW,
+        "TABULOUS_OBJ_CONTAINER":process.env.TABULOUS_OBJ_CONTAINER
       },
       env_production : {
         NODE_ENV: "production"
@@ -49,7 +49,7 @@
       ref  : "origin/master",
       repo : "git@github.com:ahadik/Tabulous.git",
       path : "/root/Tabulous",
-      "post-deploy" : "apt-get install librsvg2-dev && npm install -g gulp && npm install -g bower && npm install && bower install --allow-root && gulp build && pm2 startOrRestart ecosystem.json --env production"
+      "post-deploy" : "source /root/.tabulous && apt-get install librsvg2-dev && npm install -g gulp && npm install -g bower && npm install && bower install --allow-root && npm run decrypt && source private/tabulous-env && gulp build && pm2 startOrRestart ecosystem.json --env production"
     }
   }
 }
