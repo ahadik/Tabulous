@@ -14,7 +14,7 @@
     "bower": "./node_modules/.bin/bower",
     "gulp": "./node_modules/.bin/gulp",
     "encrypt": "echo $ENV_PW | encrypt private/tabulous-env private/tabulous-env.enc && echo $ENV_PW |  encrypt private/cert.pem private/cert.pem.enc && echo $ENV_PW |  encrypt private/tabulous-key.pem private/tabulous-key.pem.enc",
-    "decrypt": "./private/decrypt"
+    "decrypt": "decrypt private/tabulous-env.enc private/tabulous-env"
   },
   "repository": {
     "type": "git",
