@@ -1,4 +1,5 @@
 . /root/.tabulous
+echo $ENV_PW
 echo $ENV_PW | decrypt private/tabulous-env.enc private/tabulous-env
 echo $ENV_PW |  decrypt private/cert.pem.enc private/cert.pem
 echo $ENV_PW |  decrypt private/tabulous-key.pem.enc private/tabulous-key.pem
