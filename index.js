@@ -71,11 +71,7 @@
 	var app = express(),
 	    appEnv = cfenv.getAppEnv(appEnvOpts);
 	
-	var req_url = 'https://dal.objectstorage.open.softlayer.com/v1/';
-	var swiftCredentials = appEnv.getServiceCreds("tabulous-storage");
-	swiftCredentials.container = process.env.TABULOUS_OBJ_CONTAINER;
-	swiftCredentials.req_url = req_url;
-	
+	var softlayerObjStoreCreds = appEnv.getServiceCreds("tabulous-sl-os-store");
 	var configDB = __webpack_require__(13);
 	var options = {
 	  mongos: {
@@ -96,7 +92,11 @@
 	app.use(express.static(path.join(__dirname, 'public')));
 	app.use('/bower_components', express.static(__dirname + '/bower_components'));
 	app.set(path.join('views', __dirname, 'public'));
-	app.set('port', process.env.VCAP_APP_PORT || 3000);
+	if (process.env.NODE_ENV == 'production') {
+	  app.set('port', process.env.VCAP_APP_PORT || 80);
+	} else {
+	  app.set('port', 3000);
+	}
 	app.use(bodyParser.urlencoded({ extended: true }));
 	app.use(bodyParser.json());
 	//app.use(cookieParser({ secret: process.env.SESSION_SECRET }));
@@ -115,19 +115,18 @@
 	app.use(flash()); // use connect-flash for flash messages stored in session
 	app.use(__webpack_require__(19)());
 	
-	__webpack_require__(20)(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
+	__webpack_require__(20)(app, passport, softlayerObjStoreCreds); // load our routes and pass in our app and fully configured passport
 	
 	app.listen(app.get('port'), function () {
-	
-	  var skipperSwift = __webpack_require__(25)();
-	  skipperSwift.ensureContainerExists(swiftCredentials, swiftCredentials.container, function (error) {
+	  var skipperSwift = __webpack_require__(26)();
+	  skipperSwift.ensureContainerExists(softlayerObjStoreCreds, softlayerObjStoreCreds.container, function (error) {
 	    if (error) {
-	      console.log("unable to create default container", swiftCredentials.container);
+	      console.log(error);
+	      console.log("unable to create default container", softlayerObjStoreCreds.container);
 	    } else {
-	      console.log("ensured default container", swiftCredentials.container, "exists");
+	      console.log("ensured default container", softlayerObjStoreCreds.container, "exists");
 	    }
 	  });
-	
 	  console.info('Server listening on port ' + this.address().port);
 	});
 
@@ -215,22 +214,14 @@
 						"user": process.env.TABULOUS_DB_UN,
 						"password": process.env.TABULOUS_DB_PW
 					}
-				}],
-				"Object-Storage": [{
-					"name": "tabulous-storage",
-					"label": "Object-Storage",
-					"plan": "standard",
+				}, {
+					"name": "tabulous-sl-os-store",
+					"label": "user-provided",
 					"credentials": {
 						"auth_url": process.env.TABULOUS_OBJ_AUTH_URL,
-						"token_url": process.env.TABULOUS_OBJ_TOKEN_URL,
-						"project": process.env.TABULOUS_OBJ_PROJECT,
-						"projectId": process.env.TABULOUS_OBJ_PROJECT_ID,
-						"region": process.env.TABULOUS_OBJ_REGION,
-						"userId": process.env.TABULOUS_OBJ_USER_ID,
-						"username": process.env.TABULOUS_OBJ_UN,
+						"userId": process.env.TABULOUS_OBJ_UN,
 						"password": process.env.TABULOUS_OBJ_PW,
-						"domainId": process.env.TABULOUS_OBJ_DOMAIN_ID,
-						"domainName": process.env.TABULOUS_OBJ_DOMAIN_NAME
+						"container": process.env.TABULOUS_OBJ_CONTAINER
 					}
 				}]
 			}
@@ -427,11 +418,11 @@
 
 	'use strict';
 	
-	module.exports = function (app, passport, swiftCredentials) {
+	module.exports = function (app, passport, softlayerObjStoreCredentials) {
 	    var path = __webpack_require__(3);
 	    var __dirname = path.resolve(path.dirname());
-	    var objStorage = __webpack_require__(21).install(swiftCredentials);
-	    var converter = __webpack_require__(26);
+	    var objStorage = __webpack_require__(21);
+	    var converter = __webpack_require__(27);
 	
 	    // route for home page
 	    app.get('/', function (req, res) {
@@ -464,7 +455,7 @@
 	    });
 	
 	    app.post('/upload', isLoggedIn, function (req, res) {
-	        objStorage.createObject(false, req, res);
+	        objStorage.createObject(softlayerObjStoreCredentials, req, res);
 	    });
 	
 	    app.post('/convert', function (req, res) {
@@ -492,127 +483,22 @@
 	var fs = __webpack_require__(9);
 	var mimeTypes = __webpack_require__(23);
 	var crypto = __webpack_require__(24);
+	var pkgcloud = __webpack_require__(25);
 	
 	/*
 		TODO: set request URL automatically from token request
 	*/
 	
 	module.exports = {
-		token: null,
-		accountData: {},
-		expiration: 0,
-		install: function install(credentials) {
-			//Check if the token URL was brought in with the VCAP credentials. If not, add it from environmental variables.
-			if (Object.keys(credentials).indexOf('token_url') == -1) {
-				credentials['token_url'] = process.env.TABULOUS_OBJ_TOKEN_URL;
-			}
 	
-			if (this.checkAccountData(credentials)) {
-				this.accountData = credentials;
-			} else {
-				process.stderr.write('Invalid credentials\n');
-			}
-			return this;
-		},
-	
-		checkAccountData: function checkAccountData(credentials) {
-	
-			['auth_url', 'token_url', 'project', 'projectId', 'region', 'userId', 'username', 'password', 'domainId', 'domainName', 'req_url'].forEach(function (key) {
-				if (Object.keys(credentials).indexOf(key) == -1) {
-					return false;
-				}
-			});
-			return true;
-		},
-	
-		setToken: function setToken(callback) {
-			var form = {
-				"auth": {
-					"identity": {
-						"methods": ["password"],
-						"password": {
-							"user": {
-								"id": this.accountData.userId,
-								"password": this.accountData.password
-							}
-						}
-					},
-					"scope": {
-						"project": {
-							"id": this.accountData.projectId
-						}
-					}
-				}
-			};
-	
-			var options = {
-				json: form,
-				method: 'POST',
-				uri: this.accountData.token_url
-			};
-			var that = this;
-			function processResponse(error, response, body) {
-				if (!error && response.statusCode == 201) {
-					that.token = response.caseless.dict['x-subject-token'];
-					this.expiration = new Date(response.body.token.expires_at);
-					if (callback) {
-						callback(that.token);
-					}
-				} else {
-					process.stderr.write('TOKEN AUTHENTICATION FAILED:\n');
-					process.stderr.write(error + '\n');
-					process.stderr.write(response.statusCode + '\n');
-				}
-			}
-	
-			request.post(options, processResponse);
-		},
-	
-		setContainer: function setContainer(container) {
-			this.container = container;
-		},
-	
-		listContainerContents: function listContainerContents(cont) {
-			var container = this.accountData.container;
-			if (!container) {
-				container = cont;
-			}
-			var that = this;
-			var listReq = function listReq(token) {
-				request({
-					'url': that.accountData.req_url + 'AUTH_' + that.accountData.project_id + '/' + container,
-					'headers': { 'X-Auth-Token': token }
-				}, function (error, response, body) {
-					if (!error && response.statusCode == 200) {
-						console.log(response.body);
-					} else {
-						console.log(error);
-						console.log(response.statusCode);
-					}
-				});
-			};
-			//if the token has expired, get and set a new one first
-			if (this.expiration < new Date()) {
-				this.setToken(listReq);
-			} else {
-				listReq(this.token);
-			}
-		},
-		createObject: function createObject(cont, req, res) {
-			var skipperSwift = __webpack_require__(25)();
-	
-			var container = this.accountData.container;
-			if (!container) {
-				container = cont;
-			}
-			var that = this;
+		createObject: function createObject(credentials, req, res) {
 			crypto.pseudoRandomBytes(16, function (err, raw) {
 				var filename = raw.toString('hex') + '.' + mimeTypes.extension(req.file('wireframe')._files[0].stream.headers['content-type']);
 				req.file('wireframe')._files[0].stream.filename = filename;
 				req.file('wireframe').upload({
-					adapter: __webpack_require__(25),
-					credentials: that.accountData,
-					container: container
+					adapter: __webpack_require__(26),
+					credentials: credentials,
+					container: credentials.container
 				}, function (err, uploadedFiles) {
 					if (err) {
 						console.log(err);
@@ -621,10 +507,10 @@
 							error: err
 						});
 					} else {
-						console.log(that.accountData);
-						return res.json({
+						console.log('http://dal05.objectstorage.softlayer.net/v1/AUTH_14bda887-5925-4b06-a0f6-f872b024fec2/' + credentials.container + '/' + uploadedFiles[0].filename);
+						res.json({
 							success: true,
-							path: 'http://dal.objectstorage.open.softlayer.com/v1/AUTH_' + that.accountData.projectId + '/' + that.accountData.container + '/' + filename
+							path: 'http://dal05.objectstorage.softlayer.net/v1/AUTH_14bda887-5925-4b06-a0f6-f872b024fec2/' + credentials.container + '/' + uploadedFiles[0].filename
 						});
 					}
 				});
@@ -654,21 +540,27 @@
 /* 25 */
 /***/ function(module, exports) {
 
-	module.exports = require("skipper-openstack");
+	module.exports = require("pkgcloud");
 
 /***/ },
 /* 26 */
+/***/ function(module, exports) {
+
+	module.exports = require("skipper-openstack");
+
+/***/ },
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
 	function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
 	
-	var Rsvg = __webpack_require__(27).Rsvg;
+	var Rsvg = __webpack_require__(28).Rsvg;
 	var request = __webpack_require__(22).defaults({ encoding: null });
 	var cfenv = __webpack_require__(2);
 	var fs = __webpack_require__(9);
-	var Readable = __webpack_require__(28).Readable;
+	var Readable = __webpack_require__(29).Readable;
 	__webpack_require__(10);
 	
 	function parseSVG(svgText, resolve) {
@@ -736,13 +628,13 @@
 	};
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports) {
 
 	module.exports = require("librsvg");
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports) {
 
 	module.exports = require("stream");
