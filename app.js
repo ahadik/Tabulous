@@ -22,11 +22,7 @@ var appEnvOpts = vcapLocal ? {vcap:vcapLocal} : {};
 var app = express(),
     appEnv = cfenv.getAppEnv(appEnvOpts);
 
-var req_url = 'https://dal.objectstorage.open.softlayer.com/v1/';
-var swiftCredentials = appEnv.getServiceCreds("tabulous-storage");
-swiftCredentials.container = process.env.TABULOUS_OBJ_CONTAINER;
-swiftCredentials.req_url = req_url;
-
+var softlayerObjStoreCreds = appEnv.getServiceCreds("tabulous-sl-os-store");
 var configDB = require('./modules/config/database.js');
 var options = {
   mongos: {
@@ -47,7 +43,7 @@ var __dirname = path.resolve(path.dirname());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(__dirname + '/bower_components'));
 app.set(path.join('views', __dirname, 'public'));
-if(process.env.NODE_ENV){
+if(process.env.NODE_ENV == 'production'){
   app.set('port', process.env.VCAP_APP_PORT || 80);
 }else{
   app.set('port', 3000);
@@ -70,19 +66,18 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(require("skipper")());
 
-require('./routes.js')(app, passport, swiftCredentials); // load our routes and pass in our app and fully configured passport
+require('./routes.js')(app, passport, softlayerObjStoreCreds); // load our routes and pass in our app and fully configured passport
 
 app.listen(app.get('port'), function() {
-
     var skipperSwift = require("skipper-openstack")();
-    skipperSwift.ensureContainerExists(swiftCredentials, swiftCredentials.container, function (error) {
+    skipperSwift.ensureContainerExists(softlayerObjStoreCreds, softlayerObjStoreCreds.container, function (error) {
       if (error) {
-        console.log("unable to create default container", swiftCredentials.container);
+        console.log(error);
+        console.log("unable to create default container", softlayerObjStoreCreds.container);
       }
       else {
-        console.log("ensured default container", swiftCredentials.container, "exists");
+        console.log("ensured default container", softlayerObjStoreCreds.container, "exists");
       }
     });
-
     console.info('Server listening on port ' + this.address().port);
 });
