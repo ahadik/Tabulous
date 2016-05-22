@@ -1,7 +1,7 @@
-module.exports = function(app, passport, swiftCredentials) {
+module.exports = function(app, passport, softlayerObjStoreCredentials) {
     var path = require('path');
     var __dirname = path.resolve(path.dirname());
-    var objStorage = require('./modules/object_storage/index.js').install(swiftCredentials);
+    var objStorage = require('./modules/object_storage/index.js');
     var converter = require('./modules/conversion/index.js');
 
     // route for home page
@@ -36,7 +36,7 @@ module.exports = function(app, passport, swiftCredentials) {
     });
 
     app.post('/upload', isLoggedIn, function(req, res){
-        objStorage.createObject(false,req,res);
+        objStorage.createObject(softlayerObjStoreCredentials,req,res);
     });
 
     app.post('/convert', function(req,res){

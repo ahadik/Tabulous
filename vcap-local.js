@@ -11,25 +11,16 @@ module.exports = (function(){
 		                "user": process.env.TABULOUS_DB_UN,
 		                "password": process.env.TABULOUS_DB_PW
 		            }
-		        }
-		    ],
-		    "Object-Storage": [
+		        },
 		        {
-		            "name": "tabulous-storage",
-		            "label": "Object-Storage",
-		            "plan": "standard",
-		            "credentials": {
-		                "auth_url": process.env.TABULOUS_OBJ_AUTH_URL,
-		                "token_url": process.env.TABULOUS_OBJ_TOKEN_URL,
-		                "project": process.env.TABULOUS_OBJ_PROJECT,
-		                "projectId": process.env.TABULOUS_OBJ_PROJECT_ID,
-		                "region": process.env.TABULOUS_OBJ_REGION,
-		                "userId": process.env.TABULOUS_OBJ_USER_ID,
-		                "username": process.env.TABULOUS_OBJ_UN,
-		                "password": process.env.TABULOUS_OBJ_PW,
-		                "domainId": process.env.TABULOUS_OBJ_DOMAIN_ID,
-		                "domainName": process.env.TABULOUS_OBJ_DOMAIN_NAME
-		            }
+		        	"name": "tabulous-sl-os-store",
+		        	"label": "user-provided",
+		        	"credentials": {
+		        		"auth_url": process.env.TABULOUS_OBJ_AUTH_URL,
+		        		"userId": process.env.TABULOUS_OBJ_UN,
+		        		"password": process.env.TABULOUS_OBJ_PW,
+		        		"container": process.env.TABULOUS_OBJ_CONTAINER
+		        	}
 		        }
 		    ]
 		}
