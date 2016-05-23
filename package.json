@@ -13,8 +13,8 @@
     "install:bower:root": "./node_modules/.bin/bower install --allow-root",
     "bower": "./node_modules/.bin/bower",
     "gulp": "./node_modules/.bin/gulp",
-    "encrypt": "encrypt private/tabulous-env private/tabulous-env.cast5 --PW=ENV_PW && encrypt private/cert.pem private/cert.pem.cast5 --PW=ENV_PW && encrypt private/tabulous-key.pem private/tabulous-key.pem.cast5 --PW=ENV_PW",
-    "decrypt": "decrypt private/tabulous-env.cast5 private/tabulous-env --PW=ENV_PW && decrypt private/cert.pem.cast5 private/cert.pem --PW=ENV_PW && decrypt private/tabulous-key.pem.cast5 private/tabulous-key.pem --PW=ENV_PW"
+    "encrypt": "encrypt private/tabulous-env private/tabulous-env.cast5 --PW=ENV_PW && encrypt private/tabulous-env-staging private/tabulous-env-staging.cast5 --PW=ENV_PW && encrypt private/cert.pem private/cert.pem.cast5 --PW=ENV_PW && encrypt private/tabulous-key.pem private/tabulous-key.pem.cast5 --PW=ENV_PW",
+    "decrypt": "decrypt private/tabulous-env.cast5 private/tabulous-env --PW=ENV_PW && decrypt private/tabulous-env-staging.cast5 private/tabulous-env-staging --PW=ENV_PW && decrypt private/cert.pem.cast5 private/cert.pem --PW=ENV_PW && decrypt private/tabulous-key.pem.cast5 private/tabulous-key.pem --PW=ENV_PW"
   },
   "repository": {
     "type": "git",
