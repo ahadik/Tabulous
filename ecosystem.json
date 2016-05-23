@@ -54,7 +54,7 @@
       ref : "origin/development",
       repo : "git@github.com:ahadik/Tabulous.git",
       path : "/root/Tabulous",
-      "post-deploy" : "source /root/.tabulous && echo Y | apt-get install librsvg2-dev && nvm use 5.9.0 && npm install -g gulp && npm install -g bower && npm install && bower install --allow-root && npm run decrypt && source private/tabulous-env-staging && gulp build && pm2 startOrRestart ecosystem.json --env staging",
+      "post-deploy" : "source /root/.tabulous && echo Y | apt-get install librsvg2-dev && nvm use 5.9.0 && npm install -g gulp && npm install -g bower && npm install && bower install --allow-root && npm run decrypt && . private/tabulous-env-staging && gulp build && pm2 startOrRestart ecosystem.json --env staging",
       "env"  : {
         "NODE_ENV": "staging"
       }
