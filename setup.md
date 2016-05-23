@@ -8,3 +8,5 @@ Change .bashrc so that nvm is loaded for non-interactive sessions
 Install the latest version of node and set it to be used
 Install pm2 globally
 Add the server's IP address to ecosystem.json
+run the deploy pm2 command with the setup keyword
+run the deploy pm
