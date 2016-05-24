@@ -9,6 +9,10 @@ module.exports = function(app, passport, softlayerObjStoreCredentials) {
         res.redirect('/canvas');
     });
 
+    app.get('/login', function(req, res){
+        res.render('index.ejs');
+    });
+
     app.get('/canvas', isLoggedIn, function(req,res){
         res.render('canvas.ejs', {
             name : req.user.facebook.first_name,
@@ -26,13 +30,13 @@ module.exports = function(app, passport, softlayerObjStoreCredentials) {
     app.get('/auth/facebook/callback',
         passport.authenticate('facebook', {
             successRedirect : '/canvas',
-            failureRedirect : '/'
+            failureRedirect : '/login'
         }));
 
     // route for logging out
     app.get('/logout', function(req, res) {
         req.logout();
-        res.redirect('/');
+        res.redirect('/login');
     });
 
     app.post('/upload', isLoggedIn, function(req, res){
@@ -53,5 +57,5 @@ function isLoggedIn(req, res, next) {
         return next();
 
     // if they aren't redirect them to the home page
-    res.render('index.js');
+    res.redirect('/login');
 }
