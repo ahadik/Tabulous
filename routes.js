@@ -6,6 +6,7 @@ module.exports = function(app, passport, softlayerObjStoreCredentials) {
 
     // route for home page
     app.get('/', isLoggedIn, function(req, res){
+        console.log('HERE');
         res.redirect('/canvas');
     });
 

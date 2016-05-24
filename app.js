@@ -7,10 +7,10 @@ var express = require('express'),
 		flash = require('connect-flash'),
 		//cookieParser = require('cookie-parser'),
 		session = require('express-session'),
-		fs = require('fs'),
     MongoStore = require('connect-mongo')(session),
+    fs = require('fs'),
     assert = require('assert');
-    
+
 require('babel-core/register');
 require('source-map-support').install();
 
