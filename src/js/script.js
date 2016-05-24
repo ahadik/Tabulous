@@ -1,5 +1,6 @@
 import Editor from './Editor';
 import Uploader from './Uploader';
+import Loader from './Loading';
 
 //Add a .last() method to d3 to get the last item in a selectAll query,
 //which would be the most recently added item
@@ -23,6 +24,11 @@ window.onload = () => {
 	});
 	editor = new Editor(15, d3);
 	uploader = new Uploader(newFileDrops, refreshFileDrops, '.box', editor);
+	for(let loaderSVG of [...document.querySelectorAll('svg.uploadDrop .uploadDrop__container')]){
+		let loader = new Loader(null, null, d3.select(loaderSVG));
+	}
+
+	let reportLoader = new Loader(null,null,d3.select('.reportGen g'));
 	
 
 	$(document).keyup(function(e) {

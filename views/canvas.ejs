@@ -16,6 +16,10 @@
 			<div class="sidebar__header">
 				<h1>Report</h1>
 				<div id="report_gen" class="sidebar__report-gen"></div>
+				<svg class="reportGen is-loading">
+					<g fill="#FFF" fill-rule="evenodd">
+					</g>
+				</svg>
 			</div>
 			<div id="tasks" class="tasks">
 				<div class="tasks__labels">
@@ -75,22 +79,17 @@
 					<div id="fresh_upload" class="canvas__first-upload">
 						<form class="box new-upload" method="post" action="/upload" enctype="multipart/form-data">
 						  <div class="box__input">
-						  	<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+						  	<svg width="100%" height="100%" class="uploadDrop" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 						  		<input class="box__file" type="file" name="wireframe" id="file"/>
 								<button class="box__button" type="submit">Upload</button>
-								<g id="Afternoon-9.30.15" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-									<g id="Desktop-Copy-16" transform="translate(-318.000000, -318.000000)" fill="#FFFFFF">
-										<g id="Polygon-26-+-Start-a’fresh-Copy" transform="translate(319.000000, 319.000000)">
-											<polygon id="Polygon-26" stroke="#FFFFFF" fill-opacity="0.2" points="67 0 133.683956 38.5 133.683956 115.5 67 154 0.316043909 115.5 0.316043909 38.5 "></polygon>
-											<text id="Start-a’fresh-Copy" class="icon-add" font-family=".AppleSystemUIFont" font-size="56" font-weight="normal">
-												<tspan x="49.9375" y="91">+</tspan>
-											</text>
-											<text class="icon-error" font-family=".AppleSystemUIFont" font-size="56" font-weight="normal">
-												<tspan x="59" y="100">!</tspan>
-											</text>
-											<path class="icon-loading" d="M6.084 27.974c.408.453.841.881 1.3 1.283a15.44 15.44 0 0 0 10.222 3.85c8.56 0 15.5-6.94 15.5-15.5 0-8.561-6.94-15.5-15.5-15.5-8.56 0-15.5 6.939-15.5 15.5" stroke="#FFF" stroke-width="3" fill="none" fill-rule="evenodd"/>
-										</g>
-									</g>
+								<g fill="#FFF" class="uploadDrop__container" fill-rule="evenodd">
+									<path stroke="#FFF" fill-opacity=".2" d="M68 1l66.684 38.5v77L68 155 1.316 116.5v-77z"/>
+									<text class="icon-add" font-family=".AppleSystemUIFont" font-size="56" transform="translate(1 1)">
+										<tspan x="49.938" y="91">+</tspan>
+									</text>
+									<text class="icon-error" font-family=".AppleSystemUIFont" font-size="56" transform="translate(1 1)">
+										<tspan x="59" y="100">!</tspan>
+									</text>
 								</g>
 							</svg>
 						  </div>
@@ -111,21 +110,25 @@
 						<div class="reupload__wrapper">
 							<form class="box refresh-upload" method="post" action="/upload" enctype="multipart/form-data">
 						  		<div class="box__input">
-									<svg width="136" height="156" viewBox="0 0 136 156" xmlns="http://www.w3.org/2000/svg">
+									<svg width="136" height="156" class="uploadDrop" viewBox="0 0 136 156" xmlns="http://www.w3.org/2000/svg">
 										<input class="box__file" type="file" name="wireframe" id="file"/>
 										<button class="box__button" type="submit">Upload</button>
-										<g fill="none" fill-rule="evenodd">
-											<path stroke="#FFF" fill-opacity=".9" fill="#FFF" d="M68 1l66.684 38.5v77L68 155 1.316 116.5v-77z"/><g fill="#264763"><path d="M67.135 62.307v22.49h2.732v-22.49l8.601 8.534 1.933-1.918-11.9-11.807-11.9 11.807 1.933 1.918 8.6-8.534"/><path d="M87.633 80.729v10.847H49.367V80.73H48V97h41V80.729h-1.367"/></g>
+										<g fill="none" class="uploadDrop__container" fill-rule="evenodd">
+											<path class="icon-iteration" stroke="#FFF" fill-opacity=".9" fill="#FFF" d="M68 1l66.684 38.5v77L68 155 1.316 116.5v-77z"/><g fill="#264763"><path d="M67.135 62.307v22.49h2.732v-22.49l8.601 8.534 1.933-1.918-11.9-11.807-11.9 11.807 1.933 1.918 8.6-8.534"/><path d="M87.633 80.729v10.847H49.367V80.73H48V97h41V80.729h-1.367"/></g>
 										</g>
 									</svg>
 								</div>
 							</form>
 							<form class="box new-upload" method="post" action="/upload" enctype="multipart/form-data">
 						  		<div class="box__input">
-									<svg width="136" height="156" viewBox="0 0 136 156" xmlns="http://www.w3.org/2000/svg">
+									<svg width="136" height="156" class="uploadDrop" viewBox="0 0 136 156" xmlns="http://www.w3.org/2000/svg">
 										<input class="box__file" type="file" name="wireframe" id="file"/>
 										<button class="box__button" type="submit">Upload</button>
-										<g fill="#FFF" fill-rule="evenodd"><path stroke="#FFF" fill-opacity=".2" d="M68 1l66.684 38.5v77L68 155 1.316 116.5v-77z"/><text font-family=".SFNSDisplay-Regular, .SF NS Display" font-size="56" transform="translate(1 1)"><tspan x="49.938" y="91">+</tspan></text></g>
+										<g fill="#FFF" class="uploadDrop__container" fill-rule="evenodd">
+											<path stroke="#FFF" fill-opacity=".2" d="M68 1l66.684 38.5v77L68 155 1.316 116.5v-77z"/>
+											<text class="icon-add" font-family=".SFNSDisplay-Regular, .SF NS Display" font-size="56" transform="translate(1 1)">
+											<tspan x="49.938" y="91">+</tspan></text>
+										</g>
 									</svg>
 								</div>
 							</form>
