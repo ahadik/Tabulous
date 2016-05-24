@@ -5,8 +5,8 @@ module.exports = function(app, passport, softlayerObjStoreCredentials) {
     var converter = require('./modules/conversion/index.js');
 
     // route for home page
-    app.get('/', function(req, res){
-        res.render('index.ejs');
+    app.get('/', isLoggedIn, function(req, res){
+        res.redirect('/canvas');
     });
 
     app.get('/canvas', isLoggedIn, function(req,res){
@@ -53,5 +53,5 @@ function isLoggedIn(req, res, next) {
         return next();
 
     // if they aren't redirect them to the home page
-    res.redirect('/');
+    res.render('index.js');
 }
