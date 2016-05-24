@@ -7,11 +7,11 @@ var express = require('express'),
 		flash = require('connect-flash'),
 		//cookieParser = require('cookie-parser'),
 		session = require('express-session'),
-		fs = require('fs');
-		require('babel-core/register'),
+		fs = require('fs'),
 		MongoStore = require('connect-mongo')(session),
 		assert = require('assert');
 
+require('babel-core/register');
 require('source-map-support').install();
 
 var vcapLocal = null
