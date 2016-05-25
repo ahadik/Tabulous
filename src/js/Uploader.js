@@ -38,7 +38,7 @@ export default class Uploader{
 	setFormSubmission(formElems, isNew){
 		formElems.form.addEventListener('submit', (e) => {
 			if ('is-uploading' in formElems.form.classList) return false;
-			formElems.form.classList.add('is-uploading');
+			formElems.form.querySelector('svg').classList.add('is-loading');
 			formElems.form.classList.remove('is-error');
 
 			if(this.isAdvancedUpload){

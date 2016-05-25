@@ -1,0 +1,155 @@
+<html><head>
+	<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="/bower_components/jquery.sortable/jquery.sortable.min.js"></script>
+	<script src="/bower_components/d3/d3.min.js"></script>
+	<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8">
+	<script src="js/script.js" charset="utf-8"></script>
+	<title>Be Tabulous</title>
+<style id="style-1-cropbar-clipper">/* Copyright 2014 Evernote Corporation. All rights reserved. */
+.en-markup-crop-options {
+    top: 18px !important;
+    left: 50% !important;
+    margin-left: -100px !important;
+    width: 200px !important;
+    border: 2px rgba(255,255,255,.38) solid !important;
+    border-radius: 4px !important;
+}
+
+.en-markup-crop-options div div:first-of-type {
+    margin-left: 0px !important;
+}
+</style></head>
+		
+			<body class="">
+		
+		<sidebar class="sidebar reveal">
+			<div class="sidebar__header">
+				<h1>Report</h1>
+				<div id="report-gen" class="sidebar__report-gen"></div>
+				<svg class="sidebar__report-gen-loader">
+					<g fill="#FFF" fill-rule="evenodd">
+					</g>
+				</svg>
+			</div>
+			<div id="tasks" class="tasks">
+				<div class="tasks__labels">
+					<span>Prioritized Tasks</span>
+					<span>Tabs</span>
+				</div>
+				<ul id="task_list" class="sortable tasks__list">
+					<div class="tasks__priority" draggable="true">
+						<div class="tasks__priority--top"></div>
+						<div class="tasks__priority--line"></div>
+						<div class="tasks__priority--bottom"></div>
+						
+					</div>
+				<li><span class="task_item_name">Task</span><div class="task_item_tabs"><span class="task_item_datum green">2</span></div></li></ul>
+			</div>
+			<div id="sidebar_upload"></div>
+		</sidebar>
+		<section id="wrapper" class="body" style="width: 938px;">
+			<header class="header">
+				<div class="header__wrapper">
+					<img src="icons/largebee.png">
+					<h1 class="header__wrapper--title"><span class="thin">Be</span> <span class="bold">tabulous</span></h1>
+				</div>
+				<div class="header__content .header__content--hidden">
+					<h1>Hello Alex!</h1>
+					<p>We want to help you improve the accessibility of your design by considering tab order.</p>
+					<div class="basic-usage">
+						<div class="basic-usage__container--upload">
+							<span></span>
+						</div>
+						<div class="basic-usage__container--plot">
+							<span></span>
+						</div>
+						<div class="basic-usage__container--assign">
+							<span></span>
+						</div>
+						<div class="basic-usage__container--evaluate">
+							<span></span>
+						</div>
+					</div>
+					<button class="login__canvas">
+						<span>Ready to go? Let's get tabulous.</span>
+					</button>
+				</div>
+
+			</header>
+
+			<div id="canvas" class="canvas">
+				<div id="upload" class="canvas__upload">
+					<div id="upload_wrapper" class="canvas__upload--inner">
+						<div id="new_img" class="upload-selection"></div>
+						<div id="refresh_img" class="upload-selection"></div>
+					</div>
+				</div>
+				<div id="interface_wrapper" class="canvas--inner" style="height: 1082.03px; width: 1000px;">
+					
+					<div id="fresh_upload" class="canvas__first-upload canvas__first-upload--hidden">
+						<form class="box new-upload has-advanced-upload is-success" method="post" action="/upload" enctype="multipart/form-data">
+						  <div class="box__input">
+						  	<svg width="100%" height="100%" class="uploadDrop is-loading" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+						  		<input class="box__file" type="file" name="wireframe" id="file"></input>
+								<button class="box__button" type="submit">Upload</button>
+								<g fill="#FFF" class="uploadDrop__container" fill-rule="evenodd">
+									<path stroke="#FFF" fill-opacity=".2" d="M68 1l66.684 38.5v77L68 155 1.316 116.5v-77z"></path>
+									<text class="icon-add" font-family=".AppleSystemUIFont" font-size="56" transform="translate(1 1)">
+										<tspan x="49.938" y="91">+</tspan>
+									</text>
+									<text class="icon-error" font-family=".AppleSystemUIFont" font-size="56" transform="translate(1 1)">
+										<tspan x="59" y="100">!</tspan>
+									</text>
+								<path d="M6.084 27.974c.408.453.841.881 1.3 1.283a15.44 15.44 0 0 0 10.222 3.85c8.56 0 15.5-6.94 15.5-15.5 0-8.561-6.94-15.5-15.5-15.5-8.56 0-15.5 6.939-15.5 15.5" class="icon-loading" stroke-width="3" stroke="#FFF" fill="none" fill-rule="evenodd"></path></g>
+							</svg>
+						  </div>
+						</form>
+						<span class="upload_support">Upload Wireframe</span>
+					</div>
+
+					<div class="demo-modal demo-modal--hide">
+						<div class="demo-modal__container">
+							<video class="video" width="640" loop=""><source src="/imgs/intro.mp4" type="video/mp4"></video>
+							<div class="copy">
+								<p>Place nodes on your prototype to indicate the tabbing order of your interface. Then, label your key tasks by selecting specific nodes.</p>
+								<button class="demo-modal__continue">Ok great, I got it!</button>
+							</div>
+						</div>
+					</div>
+					<div class="reupload reupload--hide">
+						<div class="reupload__wrapper">
+							<form class="box refresh-upload has-advanced-upload" method="post" action="/upload" enctype="multipart/form-data">
+						  		<div class="box__input">
+									<svg width="136" height="156" class="uploadDrop" viewBox="0 0 136 156" xmlns="http://www.w3.org/2000/svg">
+										<input class="box__file" type="file" name="wireframe" id="file"></input>
+										<button class="box__button" type="submit">Upload</button>
+										<g fill="none" class="uploadDrop__container" fill-rule="evenodd">
+											<path class="icon-iteration" stroke="#FFF" fill-opacity=".9" fill="#FFF" d="M68 1l66.684 38.5v77L68 155 1.316 116.5v-77z"></path><g fill="#264763"><path d="M67.135 62.307v22.49h2.732v-22.49l8.601 8.534 1.933-1.918-11.9-11.807-11.9 11.807 1.933 1.918 8.6-8.534"></path><path d="M87.633 80.729v10.847H49.367V80.73H48V97h41V80.729h-1.367"></path></g>
+										<path d="M6.084 27.974c.408.453.841.881 1.3 1.283a15.44 15.44 0 0 0 10.222 3.85c8.56 0 15.5-6.94 15.5-15.5 0-8.561-6.94-15.5-15.5-15.5-8.56 0-15.5 6.939-15.5 15.5" class="icon-loading" stroke-width="3" stroke="#FFF" fill="none" fill-rule="evenodd"></path></g>
+									</svg>
+								</div>
+							</form>
+							<form class="box new-upload has-advanced-upload" method="post" action="/upload" enctype="multipart/form-data">
+						  		<div class="box__input">
+									<svg width="136" height="156" class="uploadDrop" viewBox="0 0 136 156" xmlns="http://www.w3.org/2000/svg">
+										<input class="box__file" type="file" name="wireframe" id="file"></input>
+										<button class="box__button" type="submit">Upload</button>
+										<g fill="#FFF" class="uploadDrop__container" fill-rule="evenodd">
+											<path stroke="#FFF" fill-opacity=".2" d="M68 1l66.684 38.5v77L68 155 1.316 116.5v-77z"></path>
+											<text class="icon-add" font-family=".SFNSDisplay-Regular, .SF NS Display" font-size="56" transform="translate(1 1)">
+											<tspan x="49.938" y="91">+</tspan></text>
+										<path d="M6.084 27.974c.408.453.841.881 1.3 1.283a15.44 15.44 0 0 0 10.222 3.85c8.56 0 15.5-6.94 15.5-15.5 0-8.561-6.94-15.5-15.5-15.5-8.56 0-15.5 6.939-15.5 15.5" class="icon-loading" stroke-width="3" stroke="#FFF" fill="none" fill-rule="evenodd"></path></g>
+									</svg>
+								</div>
+							</form>
+							<!--<div id="refresh"><p>Upload Iteration</p></div>
+							<div id="replace"><p>Start a'fresh</p></div>-->
+							
+						</div>
+					</div>
+				<svg height="1082.03125" width="1000" id="interface"><image xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://31fd5.http.dal05.cdn.softlayer.net/dev_uploads/d302487410fdf5f69dd35cc6d20a4e10.png" height="1082.03125" width="1000"></image><line x1="264" y1="114" x2="466" y2="297" stroke-width="2" stroke="#DB2780"></line><defs><filter id="dropshadow" transform="translate(" width="200%" height="200%" x="-25%" y="-25%"><feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"></feGaussianBlur><feOffset in="blur" dx="0" dy="0" result="offsetBlur"></feOffset><feMerge><feMergeNode in="offsetBlur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter></defs><g class="circle" style="cursor: pointer;"><circle transform="translate(264,114)" r="15" class="dot" filter="url(#dropshadow)" style="fill: rgb(219, 39, 128); stroke-width: 2; stroke: white; cursor: pointer;"></circle><text transform="translate(259,119)" class="circle_label" pointer-events="none" style="fill: white; font-weight: 500;">1</text></g><g class="circle" style="cursor: pointer;"><polygon points="0,11.1 19.3,0 38.6,11.1 38.6,33.4 19.3,44.6 0,33.4 " transform="translate(446,277)" fill="#B4E051" filter="url(#dropshadow)" style="stroke-width: 2; stroke: white; cursor: pointer;"></polygon><text transform="translate(461,302)" class="circle_label" pointer-events="none" style="fill: white; font-weight: 500;">2</text></g></svg><div id="task_master" tabs="2" style="opacity: 0; left: 338px; top: 152px;"><div class="arrow_box"><div id="task_head"><h1>MAKE TASK</h1><div id="task_can"></div></div><div id="task_input"><input type="text" name="task_name"></div><div id="task_options"><div class="task-master--check task-master--option"></div><div class="task-master--x task-master--option"></div></div></div></div></div>
+			</div>
+		</section>
+	
+
+</body></html>
