@@ -63,6 +63,8 @@ app.use(session({
         httpOnly : true,
         maxAge : null
     },
+    resave: true,
+    saveUninitialized: true,
     store : new MongoStore({
         url : configDB.url(appEnv),
         mongoOptions : {
