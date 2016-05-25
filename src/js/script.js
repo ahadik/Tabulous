@@ -13,6 +13,15 @@ let uploader;
 let editor;
 
 window.onload = () => {
+	window.addEventListener("dragover",function(e){
+		e = e || event;
+		e.preventDefault();
+	},false);
+	window.addEventListener("drop",function(e){
+		e = e || event;
+		e.preventDefault();
+	},false);
+	
 	let newFileDrops = Array.from(document.querySelectorAll('.new-upload .box__input svg'));
 	let refreshFileDrops = Array.from(document.querySelectorAll('.refresh-upload .box__input svg'));
 	let enterCanvas = document.querySelector('.login__canvas');
