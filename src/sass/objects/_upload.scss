@@ -1,4 +1,10 @@
-.box{
+.sidebar__header{
+	.icon-loading{
+		fill: "#33546B"
+	}
+}
+
+.box, .sidebar__header{
 	z-index: 10;
 	&__input{
 		svg{
@@ -27,7 +33,15 @@
 		display: none;
 	}
 
-	&.is-uploading{
+	.icon-add{
+		display: block;
+	}
+
+	.icon-iteration{
+		display: block;
+	}
+
+	.is-loading{
 		.icon-add{
 			display: none;
 		}
@@ -35,6 +49,10 @@
 		.icon-loading{
 			display: block;
 		}
+
+		.icon-iteration{
+		display: block;
+	}
 	}
 
 	&.is-error{

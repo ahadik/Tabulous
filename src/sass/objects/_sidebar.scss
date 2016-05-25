@@ -35,9 +35,23 @@
 	    background-position: center center;
 	    background-size: contain;
 	    top: -1px;
+	    z-index: 1;
 		background-image: url('../icons/exportReport1x.png');
 		@include mq(retina){
 			background-image: url('../icons/exportReport2x.png');
+		}
+		&--hidden{
+			display: none;
+		}
+	}
+	&__report-gen-loader{
+		position: absolute;
+		width: 36px;
+		height: 36px;
+		right: 35px;
+		top: -1;
+		g{
+			transform: translate(-7px,-30px) scale(.5,.5);
 		}
 	}
 	
