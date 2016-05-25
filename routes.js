@@ -39,6 +39,10 @@ module.exports = function(app, passport, softlayerObjStoreCredentials) {
         res.redirect('/login');
     });
 
+    app.get('/demo', function(req,res){
+        res.render('demo.ejs');
+    });
+
     app.post('/upload', isLoggedIn, function(req, res){
         objStorage.createObject(softlayerObjStoreCredentials,req,res);
     });

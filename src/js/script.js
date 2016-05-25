@@ -24,11 +24,51 @@ window.onload = () => {
 	});
 	editor = new Editor(15, d3);
 	uploader = new Uploader(newFileDrops, refreshFileDrops, '.box', editor);
+
 	for(let loaderSVG of [...document.querySelectorAll('svg.uploadDrop .uploadDrop__container')]){
-		let loader = new Loader(null, null, d3.select(loaderSVG));
+		let loader = new Loader(null, '#fff', d3.select(loaderSVG), ()=>{});
 	}
 
-	let reportLoader = new Loader(null,null,d3.select('.reportGen g'));
+	let reportLoader = new Loader(null,'#1D3649',d3.select('.sidebar__report-gen-loader g'), (loader)=>{
+		document.querySelector('#report-gen').addEventListener('click', (e)=>{
+			var report_icon = e.target;
+			report_icon.classList.add('sidebar__report-gen--hidden');
+			loader.show();
+			var target = document.querySelector('#interface');
+			var wrap = document.createElement('div');
+			wrap.appendChild(target.cloneNode(true));
+			var svgText = wrap.innerHTML;
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', 'convert');
+			var svgData = new FormData();
+			svgData.append('svg', svgText);
+			svgData.append('projectID', 123);
+
+			xhr.responseType = 'blob';
+
+			xhr.onload = function(e) {
+				if (this.status == 200) {
+					// Note: .response instead of .responseText
+					var blob = new Blob([this.response], {type: 'image/pdf'});
+					var a = document.createElement("a");
+					document.body.appendChild(a);
+					a.style = "display: none";
+					((blob, fileName) => {
+					    var url = window.URL.createObjectURL(blob);
+					    a.href = url;
+					    a.download = fileName;
+					    a.click();
+					    window.URL.revokeObjectURL(url);
+					    console.log(target);
+					    report_icon.classList.remove('sidebar__report-gen--hidden');
+						loader.hide();
+					})(blob, 'tabulous.pdf');
+				}
+			};
+
+			xhr.send(svgData);
+		});
+	});
 	
 
 	$(document).keyup(function(e) {
@@ -38,39 +78,6 @@ window.onload = () => {
 	});
 	let header_offset = $('header h1').offset().top+50;
 	let max_offset = $('#interface_wrapper').offset().top-header_offset;
-
-	document.querySelector('.sidebar__report-gen').addEventListener('click', () => {
-		var target = document.querySelector('#interface');
-		var wrap = document.createElement('div');
-		wrap.appendChild(target.cloneNode(true));
-		var svgText = wrap.innerHTML;
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', 'convert');
-		var svgData = new FormData();
-		svgData.append('svg', svgText);
-		svgData.append('projectID', 123);
-
-		xhr.responseType = 'blob';
-
-		xhr.onload = function(e) {
-			if (this.status == 200) {
-				// Note: .response instead of .responseText
-				var blob = new Blob([this.response], {type: 'image/pdf'});
-				var a = document.createElement("a");
-				document.body.appendChild(a);
-				a.style = "display: none";
-				((blob, fileName) => {
-				    var url = window.URL.createObjectURL(blob);
-				    a.href = url;
-				    a.download = fileName;
-				    a.click();
-				    window.URL.revokeObjectURL(url);
-				})(blob, 'tabulous.pdf');
-			}
-		};
-
-		xhr.send(svgData);
-	});
 
 	$('#canvas').scroll(function(){
 		var offset = $('#interface_wrapper').offset().top-header_offset;
