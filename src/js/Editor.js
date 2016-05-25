@@ -9,43 +9,9 @@ export default class Editor{
 		this.tab_container = [];
 		this.tooltip;
 		this.d3 = d3;
-
-		this.dragmove = (d) => {
-			d3.mouse(this.container.node());
-			let x = d3.event.x;
-			let y = d3.event.y;
-			let circle = d3.select(this).select('circle').attr("transform", "translate(" + x + "," + y + ")");
-			let polygon = d3.select(this).select('polygon').attr("transform", "translate(" + (x-20) + "," + (y-20) + ")");
-			d3.select(this).select('text').attr("transform", "translate(" + (x-(radius/2)) + "," + (y+(radius/2)) + ")");
-
-			let g;
-			if(circle[0][0] == null){
-				g = polygon.select(function(){return this.parentNode;});
-			}else{
-				g = circle.select(function(){return this.parentNode;});
-			}
-			
-			//shape_move.data([circle_data]);
-			//update incoming line
-			
-			if(g.data()[0].incoming != undefined){
-			  d3.select(g.data()[0].incoming[0][0]).attr('x2',x);
-			  d3.select(g.data()[0].incoming[0][0]).attr('y2',y);
-			}
-			
-			if(g.data()[0].outgoing != undefined){
-			  //update the outgoing line
-			  d3.select(g.data()[0].outgoing[0][0]).attr('x1',x);
-			  d3.select(g.data()[0].outgoing[0][0]).attr('y1',y);
-			}
-		}
-
-		// Define drag beavior
-		this.drag = d3.behavior.drag()
-	    	.on("drag", this.dragmove);
+		this.dragging = false;
 
 	}
-
 
 	//create a circle object and push it onto the list of marked tabs
 	generate_circle(point){
@@ -109,21 +75,60 @@ export default class Editor{
 		this.reveal_sidebar();
 	}
 
-	click(){
+	click(that){
 		// Ignore the click event if it was suppressed or edit mode is disabled
-		let d3 = this.d3;
-		if (d3.event.defaultPrevented || !this.edit_mode) return;
-		var container = this.container;
+		let d3 = that.d3;
+		if (d3.event.defaultPrevented || !that.edit_mode) return;
+
+		var dragmove = (target) => {
+			that.dragging = true;
+			d3.mouse(that.container.node());
+			let x = d3.event.x;
+			let y = d3.event.y;
+			let circle = d3.select(target[0][0]).select('circle').attr("transform", "translate(" + x + "," + y + ")");
+			let polygon = d3.select(target[0][0]).select('polygon').attr("transform", "translate(" + (x-20) + "," + (y-20) + ")");
+			d3.select(target[0][0]).select('text').attr("transform", "translate(" + (x-(radius/2)) + "," + (y+(radius/2)) + ")");
+
+			let g;
+			if(circle[0][0] == null){
+				g = polygon.select(function(){return this.parentNode;});
+			}else{
+				g = circle.select(function(){return this.parentNode;});
+			}
+			
+			if(g.data()[0].incoming != undefined){
+			  d3.select(g.data()[0].incoming[0][0]).attr('x2',x);
+			  d3.select(g.data()[0].incoming[0][0]).attr('y2',y);
+			}
+			
+			if(g.data()[0].outgoing != undefined){
+			  //update the outgoing line
+			  d3.select(g.data()[0].outgoing[0][0]).attr('x1',x);
+			  d3.select(g.data()[0].outgoing[0][0]).attr('y1',y);
+			}
+		}
+
+		// Define drag beavior
+		function drag(target){
+			//d3.behavior.drag().on('dragstart', ()=>{that.dragging = true}).call(target);
+			//d3.behavior.drag().on('dragend', ()=>{that.dragging = false}).call(target);
+			d3.behavior.drag().on("drag", ()=>{dragmove(target);}).call(target);
+			
+		};
+
+		var container = that.container;
 		var mouse = d3.mouse(container.node());
-		var entry = this.generate_circle(mouse);
+		var entry = that.generate_circle(mouse);
 		var prev_circle = d3.selectAll('.circle').last();
-		var radius = this.radius;
+		var radius = that.radius;
 		// Append a new point
-		var tooltip = this.tooltip;
-		var circle_g = container.append('g').attr('class', 'circle').style("cursor", "pointer").call(this.drag);
+		var tooltip = that.tooltip;
+		var circle_g = container.append('g').attr('class', 'circle').style("cursor", "pointer");
+		circle_g.call(drag, circle_g);
+
 		circle_g.append("circle")
 			.attr("transform", "translate(" + mouse[0] + "," + mouse[1] + ")")
-			.attr("r", this.radius)
+			.attr("r", that.radius)
 			.attr("class", "dot")
 			.style('fill', '#DB2780')
 			.style('stroke-width',2)
@@ -131,13 +136,18 @@ export default class Editor{
 			.style("cursor", "pointer")
 			.attr("filter", "url(#dropshadow)")
 			.on('click',function(){
-				var mouse = d3.mouse(container.node());
-				tooltip.transition().duration(200).style("opacity", 1).each('end',function(){
-					$('input[name="task_name"]').focus();
-				});
-				tooltip.style("left", (mouse[0]-125) + "px")     
+				console.log('here');
+				if(!that.dragging){
+					var mouse = d3.mouse(container.node());
+					tooltip.transition().duration(200).style("opacity", 1).each('end',function(){
+						$('input[name="task_name"]').focus();
+					});
+					tooltip.style("left", (mouse[0]-125) + "px")     
 						.style("top", (mouse[1]-155) + "px")
 						.attr('tabs', entry.index);
+				}else{
+					that.dragging = false;
+				}
 			})
 			.on('mouseover', function(){
 				d3.select(this).transition()
@@ -171,7 +181,7 @@ export default class Editor{
 		if(!d3.select('#live_line').empty()){
 			var live_line = d3.select('#live_line');
 			
-			var connector = this.container.insert('line', ':nth-child(2)')
+			var connector = that.container.insert('line', ':nth-child(2)')
 									.attr('x1', live_line.attr('x1'))
 									.attr('y1', live_line.attr('y1'))
 									.attr('x2', live_line.attr('x2'))
@@ -271,8 +281,8 @@ export default class Editor{
 			.attr('height', interface_height)
 			.attr('width', interface_width)
 			.attr('id', 'interface')
-			.on("click", () => {
-				click.call(editor);
+			.on("click", (e) => {
+				click(editor);
 			});
 		
 		editor.container.on('mousemove', () => {editor.draw_line.call(editor)});

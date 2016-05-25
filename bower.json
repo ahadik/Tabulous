@@ -18,6 +18,6 @@
   "devDependencies": {
     "ibm-colors": "~1.4.0",
     "jquery.sortable": "",
-    "d3":"3.5.7"
+    "d3":"3.5.17"
   }
 }
