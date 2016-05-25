@@ -79,6 +79,7 @@ function click(){
 	var prev_circle = d3.selectAll('.circle').last();
 	var prev_entry = prev_circle.data();
 	// Append a new point
+	console.log('asdf');
 	var circle_g = container.append('g').attr('class', 'circle').style("cursor", "pointer").call(drag);
 	var circle = circle_g.append("circle")
 							.attr("transform", "translate(" + mouse[0] + "," + mouse[1] + ")")
@@ -143,40 +144,6 @@ function click(){
 		prev_circle.data()[0]['outgoing'] = connector;
 	}
 	circle_g.data([entry]);
-}
-
-// Define drag beavior
-var drag = d3.behavior.drag()
-    .on("drag", dragmove);
-
-function dragmove(d) {
-	var mouse = d3.mouse(container.node());
-	var x = d3.event.x;
-	var y = d3.event.y;
-	var circle = d3.select(this).select('circle').attr("transform", "translate(" + x + "," + y + ")");
-	var polygon = d3.select(this).select('polygon').attr("transform", "translate(" + (x-20) + "," + (y-20) + ")");
-	var label = d3.select(this).select('text').attr("transform", "translate(" + (x-(radius/2)) + "," + (y+(radius/2)) + ")");
-
-	var g;
-	if(circle[0][0] == null){
-		g = polygon.select(function(){return this.parentNode;});
-	}else{
-		g = circle.select(function(){return this.parentNode;});
-	}
-	
-	//shape_move.data([circle_data]);
-	//update incoming line
-	
-	if(g.data()[0].incoming != undefined){
-	  d3.select(g.data()[0].incoming[0][0]).attr('x2',x);
-	  d3.select(g.data()[0].incoming[0][0]).attr('y2',y);
-	}
-	
-	if(g.data()[0].outgoing != undefined){
-	  //update the outgoing line
-	  d3.select(g.data()[0].outgoing[0][0]).attr('x1',x);
-	  d3.select(g.data()[0].outgoing[0][0]).attr('y1',y);
-	}
 }
 
 function create_hover(){
