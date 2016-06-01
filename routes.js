@@ -29,9 +29,20 @@ module.exports = function(app, passport, softlayerObjStoreCredentials) {
     // handle the callback after facebook has authenticated the user
     app.get('/auth/facebook/callback',
         passport.authenticate('facebook', {
-            successRedirect : '/canvas',
+            session : true,
             failureRedirect : '/login'
-        }));
+        }),
+        function(req, res){
+            res.redirect('/canvas')
+        },
+        function(err,req,res,next) {
+            // You could put your own behavior in here, fx: you could force auth again...
+            // res.redirect('/auth/facebook/');
+            if(err) {
+                res.redirect('/auth/facebook/')
+            }
+        }
+    );
 
     // route for logging out
     app.get('/logout', function(req, res) {
