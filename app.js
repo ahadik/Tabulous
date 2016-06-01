@@ -67,7 +67,6 @@ app.use(session({
     saveUninitialized: true,
     store : new MongoStore({
         url : configDB.url(appEnv),
-        ttl: 10, // = 14 days. Default
         mongoOptions : {
             mongos : {
                 ssl : true,
